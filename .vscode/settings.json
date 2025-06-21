@@ -1,0 +1,27 @@
+{
+	"editor.formatOnSave": true,
+	"editor.formatOnSaveMode": "file",
+	"go.formatTool": "gofmt",
+	"go.inlayHints.parameterNames": true,
+	"go.inlayHints.rangeVariableTypes": true,
+	"go.inlayHints.constantValues": true,
+	"go.inlayHints.assignVariableTypes": false,
+	"editor.inlayHints.enabled": "onUnlessPressed",
+	"editor.inlayHints.fontSize": 11,
+	"go.lintTool": "revive",
+	"go.lintOnSave": "workspace",
+	"go.lintFlags": [
+		"-config=revive.toml"
+	],
+	"go.testFlags": [
+		// "-cover",
+		"-short"
+	],
+	// hide files and folders in the explorer
+	"files.exclude": {
+		"vendor": true,
+		"tmp": true,
+	},
+	"go.coverOnSave": false,
+	"go.coverOnSingleTest": false,
+}
