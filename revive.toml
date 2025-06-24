@@ -1,0 +1,55 @@
+severity = "warning"
+confidence = 0.8
+errorCode = 1
+warningCode = 1
+
+# Enable all available rules
+enableAllRules = true
+
+# exclude the directory from linting
+Exclude=[
+    "./vendor/..."
+]
+
+[directive.specify-disable-reason]
+    severity = "error" # disableing a rule in a file without a reason is an error
+
+# Disabled rules
+[rule.add-constant]
+    Disabled = true
+[rule.empty-lines]
+    Disabled = true
+[rule.early-return]
+    Disabled = true
+[rule.package-comments]
+    Disabled = true
+[rule.unused-receiver]
+    Disabled = true
+[rule.bare-return]
+    Disabled = true
+[rule.deep-exit]
+    Exclude=["TEST"]# don't check for deep exit in test files
+
+[rule.exported]
+    Disabled = true
+
+# Rule tuning
+[rule.line-length-limit]
+    Arguments = [150]
+[rule.function-length]
+    Exclude=["TEST"]# don't check in test files
+    Arguments = [
+        45, # maximum number of statements per function
+        135, # maximum number of lines per function
+        ]
+[rule.cyclomatic]
+    Exclude=["TEST"]# don't check in test files
+    Arguments = [35] # maximum allowed cyclomatic complexity
+[rule.cognitive-complexity]
+    Exclude=["TEST"]# don't check in test files
+    Arguments = [35] # maximum allowed cognitive complexity
+
+[rule.argument-limit]
+    # Arguments = [1]
+[rule.function-result-limit]
+    # Arguments = [2]
