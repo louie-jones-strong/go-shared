@@ -1,6 +1,9 @@
 {
 	"language": "en-gb",
-	"words": [],
+	"words": [
+		"dataframe",
+		"stretchr"
+	],
 	"dictionaries": [
 		"en-gb",
 		"softwareTerms",
