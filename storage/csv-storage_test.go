@@ -13,20 +13,20 @@ type Student struct {
 }
 
 func TestCSVStorage(t *testing.T) {
-	storage := NewCSVStorage[*Student]("test.csv")
+	storage := NewCSVStorage[*Student]("csv_test.csv")
 
 	expectedData := []*Student{
 		{Name: "Alice", Age: 20, Grade: "A"},
 		{Name: "Bob", Age: 22, Grade: "B"},
 	}
 
+	// Test Saving
+	err := storage.Save(expectedData)
+	assert.NoError(t, err)
+
 	// Test Loading
 	loadedStudents, err := storage.Load()
 	assert.NoError(t, err)
 	assert.Equal(t, expectedData, loadedStudents)
-
-	// Test Saving
-	err = storage.Save(expectedData)
-	assert.NoError(t, err)
 
 }

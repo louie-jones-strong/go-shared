@@ -102,6 +102,18 @@ func (s *Series) Append(values any) {
 	}
 }
 
+func (s *Series) Val(i int) any {
+	return s.Elem(i).Val()
+}
+
+func (s *Series) Elem(i int) Element {
+	return s.elements.Elem(i)
+}
+
+func (s *Series) GetName() string {
+	return s.name
+}
+
 type Elements interface {
 	Elem(int) Element
 	Len() int
@@ -109,6 +121,12 @@ type Elements interface {
 
 type Element interface {
 	Set(any)
+	Val() any
 
 	Type() Type
+
+	ToString() string
+	// ToInt() (int, error)
+	// ToFloat() float64
+	// ToBool() (bool, error)
 }

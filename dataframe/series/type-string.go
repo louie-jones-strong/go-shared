@@ -10,6 +10,10 @@ func (e stringElement) Type() Type {
 	return String
 }
 
+func (e stringElement) Val() any {
+	return e.e
+}
+
 func (e *stringElement) Set(value interface{}) {
 
 	switch val := value.(type) {
@@ -18,4 +22,8 @@ func (e *stringElement) Set(value interface{}) {
 	default:
 		return
 	}
+}
+
+func (e stringElement) ToString() string {
+	return e.e
 }

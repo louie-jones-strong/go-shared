@@ -9,12 +9,7 @@ import (
 )
 
 func TestDataFrameStorage_CSV(t *testing.T) {
-	storage := NewDataFrameStorage("test.csv")
-
-	// Test Load
-	loadedStudents, err := storage.Load()
-	assert.NoError(t, err)
-	assert.NotNil(t, loadedStudents)
+	storage := NewDataFrameStorage("df_test.csv")
 
 	expectedData := dataframe.New(
 		[]*series.Series{
@@ -24,12 +19,12 @@ func TestDataFrameStorage_CSV(t *testing.T) {
 		},
 	)
 
+	// Test Saving
+	err := storage.Save(expectedData)
+	assert.NoError(t, err)
+
 	// Test Loading
 	res, err := storage.Load()
 	assert.NoError(t, err)
 	assert.Equal(t, expectedData, res)
-
-	// Test Saving
-	err = storage.Save(expectedData)
-	assert.NoError(t, err)
 }

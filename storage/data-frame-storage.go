@@ -19,6 +19,42 @@ func NewDataFrameStorage(filePath string) *DataFrameStorage {
 }
 
 func (s *DataFrameStorage) Save(df *dataframe.DataFrame) error {
+	file, err := os.OpenFile(s.filePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+
+	records := make([][]string, df.NumRows()+1)
+	records[0] = make([]string, df.NumColumns())
+
+	for c := 0; c < df.NumColumns(); c++ {
+		col, err := df.GetColumn(c)
+		if err != nil {
+			return err
+		}
+		records[0][c] = col.GetName()
+	}
+
+	for r := 0; r < df.NumRows(); r++ {
+		records[r+1] = make([]string, df.NumColumns())
+		for c := 0; c < df.NumColumns(); c++ {
+			item, err := df.Get(c, r)
+			if err != nil {
+				return err
+			}
+
+			records[r+1][c] = item.ToString()
+		}
+	}
+
+	err = writer.WriteAll(records)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
