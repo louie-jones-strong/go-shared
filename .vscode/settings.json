@@ -22,6 +22,6 @@
 		"vendor": true,
 		"tmp": true,
 	},
-	"go.coverOnSave": false,
+	"go.coverOnSave": true,
 	"go.coverOnSingleTest": false,
 }
