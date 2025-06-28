@@ -153,6 +153,31 @@ Bob      22       B
 10: 11
     <string>`,
 		},
+		{
+			name: "show only all: 11 rows all ints",
+			df: New(
+				[]*series.Series{
+					series.New("test", series.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+				},
+			),
+			showHeader:  true,
+			showTypes:   true,
+			showIndexes: true,
+			expectedRes: `[1x11]
+    test
+ 0: 1
+ 1: 2
+ 2: 3
+ 3: 4
+ 4: 5
+ 5: 6
+ 6: 7
+ 7: 8
+ 8: 9
+ 9: 10
+10: 11
+    <int>`,
+		},
 	}
 
 	for _, tc := range tests {

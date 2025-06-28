@@ -35,12 +35,6 @@ type Series struct {
 	t        Type
 }
 
-// stringElements is the concrete implementation of Elements for String elements.
-type stringElements []stringElement
-
-func (e stringElements) Len() int           { return len(e) }
-func (e stringElements) Elem(i int) Element { return &e[i] }
-
 func New(
 	name string,
 	t Type,
@@ -56,6 +50,8 @@ func New(
 		switch t {
 		case String:
 			ret.elements = make(stringElements, n)
+		case Int:
+			ret.elements = make(intElements, n)
 		default:
 			panic(fmt.Sprintf("unknown type %v", t))
 		}
@@ -115,6 +111,8 @@ func (s *Series) Append(values any) {
 	switch s.t {
 	case String:
 		s.elements = append(s.elements.(stringElements), news.elements.(stringElements)...)
+	case Int:
+		s.elements = append(s.elements.(intElements), news.elements.(intElements)...)
 	}
 }
 
