@@ -13,6 +13,22 @@ const (
 	Bool   Type = "bool"
 )
 
+type Elements interface {
+	Elem(int) Element
+	Len() int
+}
+
+type Element interface {
+	Set(any)
+	Val() any
+
+	Type() Type
+
+	ToString() string
+	// ToInt() (int, error)
+	// ToFloat() float64
+	// ToBool() (bool, error)
+}
 type Series struct {
 	name     string
 	elements Elements
@@ -114,19 +130,6 @@ func (s *Series) GetName() string {
 	return s.name
 }
 
-type Elements interface {
-	Elem(int) Element
-	Len() int
-}
-
-type Element interface {
-	Set(any)
-	Val() any
-
-	Type() Type
-
-	ToString() string
-	// ToInt() (int, error)
-	// ToFloat() float64
-	// ToBool() (bool, error)
+func (s *Series) GetType() Type {
+	return s.t
 }

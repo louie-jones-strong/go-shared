@@ -2,6 +2,9 @@ package dataframe
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
 )
@@ -147,4 +150,132 @@ func (df *DataFrame) Get(columnIdx int, rowIdx int) (series.Element, error) {
 
 	item := col.Elem(rowIdx)
 	return item, nil
+}
+
+// Print returns a easy to read tabular format of the data frame
+func (df *DataFrame) Print(
+	showHeaders bool,
+	showTypes bool,
+	showIndexes bool,
+	class string,
+) string {
+
+	class = strings.TrimSpace(class)
+
+	if df == nil {
+		if class == "" {
+			return "Nil"
+		}
+		return fmt.Sprintf("%v: Nil", class)
+	}
+
+	nRows := df.NumRows()
+	nCols := df.NumColumns()
+	if nCols == 0 {
+		if class == "" {
+			return "Empty"
+		}
+		return fmt.Sprintf("%v: Empty", class)
+	}
+
+	addRightPadding := func(s string, nChar int) string {
+		if utf8.RuneCountInString(s) < nChar {
+			return s + strings.Repeat(" ", nChar-utf8.RuneCountInString(s))
+		}
+		return s
+	}
+
+	addLeftPadding := func(s string, nChar int) string {
+		if utf8.RuneCountInString(s) < nChar {
+			return strings.Repeat(" ", nChar-utf8.RuneCountInString(s)) + s
+		}
+		return s
+	}
+
+	nMatRows := nRows
+	nMatCols := nCols
+	colOffset := 0
+	rowOffset := 0
+	if showHeaders {
+		nMatRows++
+		rowOffset = 1
+	}
+	if showTypes {
+		nMatRows++
+	}
+	if showIndexes {
+		nMatCols++
+		colOffset = 1
+	}
+
+	matrix := make([][]string, nMatRows)
+	maxWidths := make([]int, nMatCols)
+
+	addToMatrix := func(r int, c int, s string) {
+		length := len(s)
+
+		if length > maxWidths[c] {
+			maxWidths[c] = length
+		}
+
+		if len(matrix[r]) == 0 {
+			matrix[r] = make([]string, nMatCols)
+		}
+		matrix[r][c] = s
+	}
+
+	// add headers to matrix
+	if showHeaders {
+		addToMatrix(0, 0, "")
+		for c := 0; c < nCols; c++ {
+			colName := df.columns[c].GetName()
+			addToMatrix(0, c+colOffset, colName)
+		}
+	}
+
+	// add data to matrix
+	for r := 0; r < nRows; r++ {
+
+		if showIndexes {
+			addToMatrix(r+rowOffset, 0, strconv.Itoa(r)+":")
+		}
+
+		for c := 0; c < nCols; c++ {
+			val, err := df.Get(c, r)
+			if err != nil {
+				panic(err)
+			}
+			addToMatrix(r+rowOffset, c+colOffset, val.ToString())
+		}
+	}
+
+	// add types to matrix
+	if showTypes {
+		addToMatrix(nRows+rowOffset, 0, "")
+		for c := 0; c < nCols; c++ {
+			col := df.columns[c]
+			typeText := fmt.Sprintf("<%v>", col.GetType())
+			addToMatrix(nRows+rowOffset, c+colOffset, typeText)
+		}
+	}
+
+	// build the text
+	str := fmt.Sprintf("[%dx%d] %v", nCols, nRows, class)
+	str = strings.TrimRight(str, " ")
+	for r := 0; r < nMatRows; r++ {
+		str += "\n"
+
+		// add padding
+		if showIndexes {
+			matrix[r][0] = addLeftPadding(matrix[r][0], maxWidths[0])
+		}
+		for c := colOffset; c < nMatCols; c++ {
+			matrix[r][c] = addRightPadding(matrix[r][c], maxWidths[c])
+		}
+
+		row := strings.Join(matrix[r], " ")
+		str += strings.TrimRight(row, " ")
+	}
+
+	return str
 }
