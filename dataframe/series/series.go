@@ -96,6 +96,27 @@ func (s *Series) GetType() Type {
 	return s.t
 }
 
+func (s Series) ToStrings() ([]string, error) {
+	ret := make([]string, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = s.elements.Elem(i).ToString()
+	}
+	return ret, nil
+}
+
+func (s Series) ToInts() ([]int, error) {
+	ret := make([]int, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		val, err := s.elements.Elem(i).ToInt()
+		if err != nil {
+			return nil, err
+		}
+		ret[i] = val
+
+	}
+	return ret, nil
+}
+
 func (s Series) ToFloats() []float64 {
 	ret := make([]float64, s.Len())
 	for i := 0; i < s.Len(); i++ {
@@ -103,6 +124,19 @@ func (s Series) ToFloats() []float64 {
 		ret[i] = e.ToFloat()
 	}
 	return ret
+}
+
+func (s Series) ToBools() ([]bool, error) {
+	ret := make([]bool, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		val, err := s.elements.Elem(i).ToBool()
+		if err != nil {
+			return nil, err
+		}
+		ret[i] = val
+
+	}
+	return ret, nil
 }
 
 func (s Series) Sum() float64 {
