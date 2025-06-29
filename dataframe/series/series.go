@@ -188,3 +188,42 @@ func (s Series) Max() float64 {
 	}
 	return maximum
 }
+
+type Indexes interface {
+}
+
+func parseIndexes(l int, indexes Indexes) ([]int, error) {
+	var ret []int
+	switch tIndexes := indexes.(type) {
+	case []int:
+		ret = tIndexes
+	case int:
+		ret = []int{tIndexes}
+	case []bool:
+		bools := tIndexes
+		if len(bools) != l {
+			return nil, fmt.Errorf("indexing error: index dimensions mismatch")
+		}
+		for i, b := range bools {
+			if b {
+				ret = append(ret, i)
+			}
+		}
+	default:
+		return nil, fmt.Errorf("indexing error: unknown indexing mode")
+	}
+	return ret, nil
+}
+
+func (s Series) Subset(indexes Indexes) Series {
+	idx, err := parseIndexes(s.Len(), indexes)
+	if err != nil {
+		return s
+	}
+
+	return Series{
+		name:     s.name,
+		t:        s.t,
+		elements: s.elements.Subset(idx),
+	}
+}
