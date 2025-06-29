@@ -47,7 +47,10 @@ func New(
 		ret.elements = newElements(v, newStringElement)
 	case []int:
 		ret.elements = newElements(v, newIntElement)
-
+	case []float64:
+		ret.elements = newElements(v, newFloatElement)
+	case []bool:
+		ret.elements = newElements(v, newBoolElement)
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
@@ -67,6 +70,10 @@ func (s *Series) Append(values any) {
 		s.elements = append(s.elements.(Elements[*stringElement]), news.elements.(Elements[*stringElement])...)
 	case Int:
 		s.elements = append(s.elements.(Elements[*intElement]), news.elements.(Elements[*intElement])...)
+	case Float:
+		s.elements = append(s.elements.(Elements[*floatElement]), news.elements.(Elements[*floatElement])...)
+	case Bool:
+		s.elements = append(s.elements.(Elements[*boolElement]), news.elements.(Elements[*boolElement])...)
 	}
 }
 

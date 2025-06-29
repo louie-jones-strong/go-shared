@@ -129,7 +129,7 @@ Bob      22       B
 <string> <string> <string>`,
 		},
 		{
-			name: "show only all: 11 rows all strings",
+			name: "show all: 11 rows all strings",
 			df: New(
 				[]*series.Series{
 					series.New("test", series.String, []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
@@ -154,7 +154,7 @@ Bob      22       B
     <string>`,
 		},
 		{
-			name: "show only all: 11 rows all ints",
+			name: "show all: 11 rows all ints",
 			df: New(
 				[]*series.Series{
 					series.New("test", series.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
@@ -177,6 +177,34 @@ Bob      22       B
  9: 10
 10: 11
     <int>`,
+		},
+		{
+			name: "show all: 11 rows of all types",
+			df: New(
+				[]*series.Series{
+					series.New("A", series.String, []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
+					series.New("B", series.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.New("C", series.Float, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.New("D", series.Bool, []bool{true, false, true, false, true, false, true, false, true, false, true}),
+				},
+			),
+			showHeader:  true,
+			showTypes:   true,
+			showIndexes: true,
+			expectedRes: `[4x11]
+    A        B     C       D
+ 0: 1        1     1       true
+ 1: 2        2     2       false
+ 2: 3        3     3       true
+ 3: 4        4     4       false
+ 4: 5        5     5       true
+ 5: 6        6     6       false
+ 6: 7        7     7       true
+ 7: 8        8     8       false
+ 8: 9        9     9       true
+ 9: 10       10    10      false
+10: 11       11    11      true
+    <string> <int> <float> <bool>`,
 		},
 	}
 
