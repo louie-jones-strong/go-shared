@@ -2,6 +2,9 @@ package series
 
 import (
 	"fmt"
+	"math"
+
+	"gonum.org/v1/gonum/stat"
 )
 
 type Type string
@@ -20,9 +23,9 @@ type Element interface {
 	Type() Type
 
 	ToString() string
-	// ToInt() (int, error)
-	// ToFloat() float64
-	// ToBool() (bool, error)
+	ToInt() (int, error)
+	ToFloat() float64
+	ToBool() (bool, error)
 }
 type Series struct {
 	name     string
@@ -91,4 +94,63 @@ func (s *Series) GetName() string {
 
 func (s *Series) GetType() Type {
 	return s.t
+}
+
+func (s Series) ToFloats() []float64 {
+	ret := make([]float64, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		e := s.elements.Elem(i)
+		ret[i] = e.ToFloat()
+	}
+	return ret
+}
+
+func (s Series) Sum() float64 {
+	if s.Len() == 0 || s.GetType() == String || s.GetType() == Bool {
+		return math.NaN()
+	}
+	sFloat := s.ToFloats()
+	acc := float64(0)
+	for i := 0; i < len(sFloat); i++ {
+		acc += sFloat[i]
+	}
+	return acc
+}
+
+// StdDev calculates the standard deviation of a series
+func (s Series) StdDev() float64 {
+	stdDev := stat.StdDev(s.ToFloats(), nil)
+	return stdDev
+}
+
+// Mean calculates the average value of a series
+func (s Series) Mean() float64 {
+	stdDev := stat.Mean(s.ToFloats(), nil)
+	return stdDev
+}
+
+func (s Series) Min() float64 {
+	if s.Len() == 0 || s.GetType() == String || s.GetType() == Bool {
+		return math.NaN()
+	}
+	sFloat := s.ToFloats()
+
+	minimum := sFloat[0]
+	for i := 1; i < len(sFloat); i++ {
+		minimum = min(minimum, sFloat[i])
+	}
+	return minimum
+}
+
+func (s Series) Max() float64 {
+	if s.Len() == 0 || s.GetType() == String || s.GetType() == Bool {
+		return math.NaN()
+	}
+	sFloat := s.ToFloats()
+
+	maximum := sFloat[0]
+	for i := 1; i < len(sFloat); i++ {
+		maximum = max(maximum, sFloat[i])
+	}
+	return maximum
 }

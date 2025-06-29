@@ -32,3 +32,21 @@ func (e boolElement) ToString() string {
 	}
 	return "false"
 }
+
+func (e boolElement) ToInt() (int, error) {
+	if e.val {
+		return 1, nil
+	}
+	return 0, nil
+}
+
+func (e boolElement) ToFloat() float64 {
+	if e.val {
+		return 1.0
+	}
+	return 0.0
+}
+
+func (e boolElement) ToBool() (bool, error) {
+	return e.val, nil
+}

@@ -217,3 +217,72 @@ Bob      22       B
 		})
 	}
 }
+
+func TestUnit_Describe(t *testing.T) {
+
+	tests := []struct {
+		name        string
+		df          *DataFrame
+		expectedRes *DataFrame
+	}{
+		{
+			name:        "nil",
+			df:          nil,
+			expectedRes: nil,
+		},
+		{
+			name: "nil columns",
+			df: New(
+				nil,
+			),
+			expectedRes: nil,
+		},
+		{
+			name: "no columns",
+			df: New(
+				[]*series.Series{},
+			),
+			expectedRes: nil,
+		},
+		{
+			name: "1 int column",
+			df: New(
+				[]*series.Series{
+					series.New("test", series.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+				},
+			),
+			expectedRes: New(
+				[]*series.Series{
+					series.New("index", series.String, []string{
+						"count",
+						"sum",
+						"mean",
+						"std",
+						"min",
+						// "25%",
+						// "50%",
+						// "75%",
+						"max",
+					}),
+					series.New("test", series.Float, []float64{
+						11,
+						66,
+						6,
+						3.3166247903554,
+						1,
+						11,
+					}),
+				},
+			),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+
+			res := tc.df.Describe()
+
+			assert.Equal(t, tc.expectedRes, res)
+		})
+	}
+}

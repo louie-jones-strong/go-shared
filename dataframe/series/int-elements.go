@@ -31,3 +31,20 @@ func (e *intElement) Set(value any) {
 func (e intElement) ToString() string {
 	return fmt.Sprintf("%v", e.val)
 }
+
+func (e intElement) ToInt() (int, error) {
+	return e.val, nil
+}
+
+func (e intElement) ToFloat() float64 {
+	return float64(e.val)
+}
+func (e intElement) ToBool() (bool, error) {
+	switch e.val {
+	case 1:
+		return true, nil
+	case 0:
+		return false, nil
+	}
+	return false, fmt.Errorf("can't convert Float \"%v\" to bool", e.val)
+}

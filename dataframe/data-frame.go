@@ -23,10 +23,17 @@ func New(
 }
 
 func (df *DataFrame) NumColumns() int {
+	if df == nil {
+		return 0
+	}
 	return len(df.columns)
 }
 
 func (df *DataFrame) NumRows() int {
+	if df == nil {
+		return 0
+	}
+
 	if df.NumColumns() == 0 {
 		return 0
 	}
@@ -278,4 +285,41 @@ func (df *DataFrame) Print(
 	}
 
 	return str
+}
+
+func (df *DataFrame) Describe() *DataFrame {
+	nCols := df.NumColumns()
+	if nCols == 0 {
+		return nil
+	}
+
+	columns := make([]*series.Series, nCols+1)
+
+	columns[0] = series.New("index", series.String, []string{
+		"count",
+		"sum",
+		"mean",
+		"std",
+		"min",
+		// "25%",
+		// "50%",
+		// "75%",
+		"max",
+	})
+
+	for c := 0; c < nCols; c++ {
+		col := df.columns[c]
+		values := []float64{
+			float64(col.Len()),
+			col.Sum(),
+			col.Mean(),
+			col.StdDev(),
+			col.Min(),
+			col.Max(),
+		}
+
+		columns[c+1] = series.New(col.GetName(), series.Float, values)
+	}
+
+	return New(columns)
 }
