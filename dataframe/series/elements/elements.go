@@ -1,4 +1,19 @@
-package series
+package elements
+
+import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
+
+type Element interface {
+	Set(any)
+
+	Val() any
+
+	Type() apptype.Type
+
+	ToString() string
+	ToInt() (int, error)
+	ToFloat() float64
+	ToBool() (bool, error)
+}
 
 type IElements interface {
 	Elem(int) Element
@@ -8,7 +23,7 @@ type IElements interface {
 
 type Elements[T Element] []T
 
-func newElements[V any, E Element](
+func NewElements[V any, E Element](
 	values []V,
 	elemBuilder func(V) E,
 ) Elements[E] {

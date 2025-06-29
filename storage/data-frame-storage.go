@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/louie-jones-strong/go-shared/dataframe"
+	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
 )
 
@@ -86,7 +87,7 @@ func (s *DataFrameStorage) Load() (*dataframe.DataFrame, error) {
 			values[rowIdx-1] = records[rowIdx][colIdx]
 		}
 
-		cols[colIdx] = series.New(header, series.String, values)
+		cols[colIdx] = series.New(header, apptype.String, values)
 	}
 
 	df := dataframe.New(

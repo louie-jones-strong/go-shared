@@ -6,7 +6,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
 )
 
 type DataFrame struct {
@@ -81,7 +83,7 @@ func (df *DataFrame) AddRow(row []any) error {
 	return nil
 }
 
-func (df *DataFrame) GetRow(rowIdx int) ([]series.Element, error) {
+func (df *DataFrame) GetRow(rowIdx int) ([]elements.Element, error) {
 	if rowIdx < 0 || rowIdx >= df.NumRows() {
 		return nil, fmt.Errorf(
 			"GetRow called with rowIdx: %v out or range %v - %v",
@@ -91,7 +93,7 @@ func (df *DataFrame) GetRow(rowIdx int) ([]series.Element, error) {
 		)
 	}
 
-	row := make([]series.Element, df.NumColumns())
+	row := make([]elements.Element, df.NumColumns())
 	for c := 0; c < df.NumColumns(); c++ {
 		row[c] = df.columns[c].Elem(rowIdx)
 	}
@@ -121,7 +123,7 @@ func (df *DataFrame) GetColumn(columnIdx int) (*series.Series, error) {
 	return df.columns[columnIdx], nil
 }
 
-func (df *DataFrame) GetByName(columnName string, rowIdx int) (series.Element, error) {
+func (df *DataFrame) GetByName(columnName string, rowIdx int) (elements.Element, error) {
 	col, err := df.GetColumnByName(columnName)
 	if err != nil {
 		return nil, err
@@ -140,7 +142,7 @@ func (df *DataFrame) GetByName(columnName string, rowIdx int) (series.Element, e
 	return item, nil
 }
 
-func (df *DataFrame) Get(columnIdx int, rowIdx int) (series.Element, error) {
+func (df *DataFrame) Get(columnIdx int, rowIdx int) (elements.Element, error) {
 	col, err := df.GetColumn(columnIdx)
 	if err != nil {
 		return nil, err
@@ -295,7 +297,7 @@ func (df *DataFrame) Describe() *DataFrame {
 
 	columns := make([]*series.Series, nCols+1)
 
-	columns[0] = series.New("index", series.String, []string{
+	columns[0] = series.New("index", apptype.String, []string{
 		"count",
 		"sum",
 		"mean",
@@ -318,7 +320,7 @@ func (df *DataFrame) Describe() *DataFrame {
 			col.Max(),
 		}
 
-		columns[c+1] = series.New(col.GetName(), series.Float, values)
+		columns[c+1] = series.New(col.GetName(), apptype.Float, values)
 	}
 
 	return New(columns)

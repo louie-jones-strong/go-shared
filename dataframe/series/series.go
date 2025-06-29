@@ -4,56 +4,38 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
 	"gonum.org/v1/gonum/stat"
 )
 
-type Type string
-
-const (
-	String Type = "string"
-	Int    Type = "int"
-	Float  Type = "float"
-	Bool   Type = "bool"
-)
-
-type Element interface {
-	Set(any)
-	Val() any
-
-	Type() Type
-
-	ToString() string
-	ToInt() (int, error)
-	ToFloat() float64
-	ToBool() (bool, error)
-}
 type Series struct {
-	name     string
-	t        Type
-	elements IElements
+	name string
+	t    apptype.Type
+	elms elements.IElements
 }
 
 func New(
 	name string,
-	t Type,
+	t apptype.Type,
 	values any,
 ) *Series {
 
 	ret := &Series{
-		name:     name,
-		t:        t,
-		elements: nil,
+		name: name,
+		t:    t,
+		elms: nil,
 	}
 
 	switch v := values.(type) {
 	case []string:
-		ret.elements = newElements(v, newStringElement)
+		ret.elms = elements.NewElements(v, elements.NewStringElement)
 	case []int:
-		ret.elements = newElements(v, newIntElement)
+		ret.elms = elements.NewElements(v, elements.NewIntElement)
 	case []float64:
-		ret.elements = newElements(v, newFloatElement)
+		ret.elms = elements.NewElements(v, elements.NewFloatElement)
 	case []bool:
-		ret.elements = newElements(v, newBoolElement)
+		ret.elms = elements.NewElements(v, elements.NewBoolElement)
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
@@ -62,21 +44,21 @@ func New(
 }
 
 func (s *Series) Len() int {
-	return s.elements.Len()
+	return s.elms.Len()
 }
 
 func (s *Series) Append(values any) {
 
 	news := New(s.name, s.t, values)
 	switch s.t {
-	case String:
-		s.elements = append(s.elements.(Elements[*stringElement]), news.elements.(Elements[*stringElement])...)
-	case Int:
-		s.elements = append(s.elements.(Elements[*intElement]), news.elements.(Elements[*intElement])...)
-	case Float:
-		s.elements = append(s.elements.(Elements[*floatElement]), news.elements.(Elements[*floatElement])...)
-	case Bool:
-		s.elements = append(s.elements.(Elements[*boolElement]), news.elements.(Elements[*boolElement])...)
+	case apptype.String:
+		s.elms = append(s.elms.(elements.Elements[*elements.StringElement]), news.elms.(elements.Elements[*elements.StringElement])...)
+	case apptype.Int:
+		s.elms = append(s.elms.(elements.Elements[*elements.IntElement]), news.elms.(elements.Elements[*elements.IntElement])...)
+	case apptype.Float:
+		s.elms = append(s.elms.(elements.Elements[*elements.FloatElement]), news.elms.(elements.Elements[*elements.FloatElement])...)
+	case apptype.Bool:
+		s.elms = append(s.elms.(elements.Elements[*elements.BoolElement]), news.elms.(elements.Elements[*elements.BoolElement])...)
 	}
 }
 
@@ -84,22 +66,22 @@ func (s *Series) Val(i int) any {
 	return s.Elem(i).Val()
 }
 
-func (s *Series) Elem(i int) Element {
-	return s.elements.Elem(i)
+func (s *Series) Elem(i int) elements.Element {
+	return s.elms.Elem(i)
 }
 
 func (s *Series) GetName() string {
 	return s.name
 }
 
-func (s *Series) GetType() Type {
+func (s *Series) GetType() apptype.Type {
 	return s.t
 }
 
 func (s Series) ToStrings() ([]string, error) {
 	ret := make([]string, s.Len())
 	for i := 0; i < s.Len(); i++ {
-		ret[i] = s.elements.Elem(i).ToString()
+		ret[i] = s.elms.Elem(i).ToString()
 	}
 	return ret, nil
 }
@@ -107,7 +89,7 @@ func (s Series) ToStrings() ([]string, error) {
 func (s Series) ToInts() ([]int, error) {
 	ret := make([]int, s.Len())
 	for i := 0; i < s.Len(); i++ {
-		val, err := s.elements.Elem(i).ToInt()
+		val, err := s.elms.Elem(i).ToInt()
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +102,7 @@ func (s Series) ToInts() ([]int, error) {
 func (s Series) ToFloats() []float64 {
 	ret := make([]float64, s.Len())
 	for i := 0; i < s.Len(); i++ {
-		e := s.elements.Elem(i)
+		e := s.elms.Elem(i)
 		ret[i] = e.ToFloat()
 	}
 	return ret
@@ -129,7 +111,7 @@ func (s Series) ToFloats() []float64 {
 func (s Series) ToBools() ([]bool, error) {
 	ret := make([]bool, s.Len())
 	for i := 0; i < s.Len(); i++ {
-		val, err := s.elements.Elem(i).ToBool()
+		val, err := s.elms.Elem(i).ToBool()
 		if err != nil {
 			return nil, err
 		}
@@ -140,7 +122,7 @@ func (s Series) ToBools() ([]bool, error) {
 }
 
 func (s Series) Sum() float64 {
-	if s.Len() == 0 || s.GetType() == String || s.GetType() == Bool {
+	if s.Len() == 0 || s.GetType() == apptype.String || s.GetType() == apptype.Bool {
 		return math.NaN()
 	}
 	sFloat := s.ToFloats()
@@ -164,7 +146,7 @@ func (s Series) Mean() float64 {
 }
 
 func (s Series) Min() float64 {
-	if s.Len() == 0 || s.GetType() == String || s.GetType() == Bool {
+	if s.Len() == 0 || s.GetType() == apptype.String || s.GetType() == apptype.Bool {
 		return math.NaN()
 	}
 	sFloat := s.ToFloats()
@@ -177,7 +159,7 @@ func (s Series) Min() float64 {
 }
 
 func (s Series) Max() float64 {
-	if s.Len() == 0 || s.GetType() == String || s.GetType() == Bool {
+	if s.Len() == 0 || s.GetType() == apptype.String || s.GetType() == apptype.Bool {
 		return math.NaN()
 	}
 	sFloat := s.ToFloats()
@@ -222,8 +204,8 @@ func (s Series) Subset(indexes Indexes) Series {
 	}
 
 	return Series{
-		name:     s.name,
-		t:        s.t,
-		elements: s.elements.Subset(idx),
+		name: s.name,
+		t:    s.t,
+		elms: s.elms.Subset(idx),
 	}
 }

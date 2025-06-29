@@ -1,7 +1,9 @@
 {
 	"language": "en-gb",
 	"words": [
+		"apptype",
 		"dataframe",
+		"gonum",
 		"stretchr"
 	],
 	"dictionaries": [
