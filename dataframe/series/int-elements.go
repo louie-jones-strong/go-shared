@@ -2,14 +2,12 @@ package series
 
 import "fmt"
 
-// intElements is the concrete implementation of Elements for Int elements.
-type intElements []intElement
-
-func (e intElements) Len() int           { return len(e) }
-func (e intElements) Elem(i int) Element { return &e[i] }
-
 type intElement struct {
 	val int
+}
+
+func newIntElement(val int) *intElement {
+	return &intElement{val: val}
 }
 
 func (e intElement) Type() Type {

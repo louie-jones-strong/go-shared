@@ -13,11 +13,6 @@ const (
 	Bool   Type = "bool"
 )
 
-type Elements interface {
-	Elem(int) Element
-	Len() int
-}
-
 type Element interface {
 	Set(any)
 	Val() any
@@ -31,8 +26,8 @@ type Element interface {
 }
 type Series struct {
 	name     string
-	elements Elements
 	t        Type
+	elements IElements
 }
 
 func New(
@@ -40,60 +35,19 @@ func New(
 	t Type,
 	values any,
 ) *Series {
+
 	ret := &Series{
-		name: name,
-		t:    t,
-	}
-
-	// Pre-allocate elements
-	preAlloc := func(n int) {
-		switch t {
-		case String:
-			ret.elements = make(stringElements, n)
-		case Int:
-			ret.elements = make(intElements, n)
-		default:
-			panic(fmt.Sprintf("unknown type %v", t))
-		}
-	}
-
-	if values == nil {
-		preAlloc(1)
-		ret.elements.Elem(0).Set(nil)
-		return ret
+		name:     name,
+		t:        t,
+		elements: nil,
 	}
 
 	switch v := values.(type) {
 	case []string:
-		l := len(v)
-		preAlloc(l)
-		for i := 0; i < l; i++ {
-			ret.elements.Elem(i).Set(v[i])
-		}
-	case []float64:
-		l := len(v)
-		preAlloc(l)
-		for i := 0; i < l; i++ {
-			ret.elements.Elem(i).Set(v[i])
-		}
+		ret.elements = newElements(v, newStringElement)
 	case []int:
-		l := len(v)
-		preAlloc(l)
-		for i := 0; i < l; i++ {
-			ret.elements.Elem(i).Set(v[i])
-		}
-	case []bool:
-		l := len(v)
-		preAlloc(l)
-		for i := 0; i < l; i++ {
-			ret.elements.Elem(i).Set(v[i])
-		}
-	case Series:
-		l := v.Len()
-		preAlloc(l)
-		for i := 0; i < l; i++ {
-			ret.elements.Elem(i).Set(v.elements.Elem(i))
-		}
+		ret.elements = newElements(v, newIntElement)
+
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
@@ -110,9 +64,9 @@ func (s *Series) Append(values any) {
 	news := New(s.name, s.t, values)
 	switch s.t {
 	case String:
-		s.elements = append(s.elements.(stringElements), news.elements.(stringElements)...)
+		s.elements = append(s.elements.(Elements[*stringElement]), news.elements.(Elements[*stringElement])...)
 	case Int:
-		s.elements = append(s.elements.(intElements), news.elements.(intElements)...)
+		s.elements = append(s.elements.(Elements[*intElement]), news.elements.(Elements[*intElement])...)
 	}
 }
 

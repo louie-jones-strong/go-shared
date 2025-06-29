@@ -1,13 +1,11 @@
 package series
 
-// stringElements is the concrete implementation of Elements for String elements.
-type stringElements []stringElement
-
-func (e stringElements) Len() int           { return len(e) }
-func (e stringElements) Elem(i int) Element { return &e[i] }
-
 type stringElement struct {
 	val string
+}
+
+func newStringElement(val string) *stringElement {
+	return &stringElement{val: val}
 }
 
 func (e stringElement) Type() Type {
