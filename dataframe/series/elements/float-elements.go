@@ -2,6 +2,7 @@ package elements
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 )
@@ -36,4 +37,36 @@ func (e FloatElement) ToBool() (bool, error) {
 		return false, nil
 	}
 	return false, fmt.Errorf("can't convert Float \"%v\" to bool", e.val)
+}
+
+func (e FloatElement) Less(elem Element) bool {
+	f := elem.ToFloat()
+	if math.IsNaN(f) {
+		return false
+	}
+	return e.val < f
+}
+
+func (e FloatElement) LessEq(elem Element) bool {
+	f := elem.ToFloat()
+	if math.IsNaN(f) {
+		return false
+	}
+	return e.val <= f
+}
+
+func (e FloatElement) Greater(elem Element) bool {
+	f := elem.ToFloat()
+	if math.IsNaN(f) {
+		return false
+	}
+	return e.val > f
+}
+
+func (e FloatElement) GreaterEq(elem Element) bool {
+	f := elem.ToFloat()
+	if math.IsNaN(f) {
+		return false
+	}
+	return e.val >= f
 }

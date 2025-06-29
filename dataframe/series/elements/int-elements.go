@@ -36,3 +36,35 @@ func (e IntElement) ToBool() (bool, error) {
 	}
 	return false, fmt.Errorf("can't convert Float \"%v\" to bool", e.val)
 }
+
+func (e IntElement) Less(elem Element) bool {
+	f, err := elem.ToInt()
+	if err != nil {
+		return false
+	}
+	return e.val < f
+}
+
+func (e IntElement) LessEq(elem Element) bool {
+	f, err := elem.ToInt()
+	if err != nil {
+		return false
+	}
+	return e.val <= f
+}
+
+func (e IntElement) Greater(elem Element) bool {
+	f, err := elem.ToInt()
+	if err != nil {
+		return false
+	}
+	return e.val > f
+}
+
+func (e IntElement) GreaterEq(elem Element) bool {
+	f, err := elem.ToInt()
+	if err != nil {
+		return false
+	}
+	return e.val >= f
+}

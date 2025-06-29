@@ -44,3 +44,19 @@ func (e StringElement) ToBool() (bool, error) {
 	}
 	return false, fmt.Errorf("can't convert String \"%v\" to bool", e.val)
 }
+
+func (e StringElement) Less(elem Element) bool {
+	return e.val < elem.ToString()
+}
+
+func (e StringElement) LessEq(elem Element) bool {
+	return e.val <= elem.ToString()
+}
+
+func (e StringElement) Greater(elem Element) bool {
+	return e.val > elem.ToString()
+}
+
+func (e StringElement) GreaterEq(elem Element) bool {
+	return e.val >= elem.ToString()
+}

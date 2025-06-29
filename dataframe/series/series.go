@@ -3,6 +3,7 @@ package series
 import (
 	"fmt"
 	"math"
+	"sort"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
@@ -209,3 +210,34 @@ func (s Series) Subset(indexes Indexes) Series {
 		elms: s.elms.Subset(idx),
 	}
 }
+
+func (s Series) Order(reverse bool) []int {
+	var ie indexedElements
+	var nasIdx []int
+	for i := 0; i < s.Len(); i++ {
+		e := s.elms.Elem(i)
+		ie = append(ie, indexedElement{i, e})
+	}
+	var srt sort.Interface
+	srt = ie
+	if reverse {
+		srt = sort.Reverse(srt)
+	}
+	sort.Stable(srt)
+	var ret []int
+	for _, e := range ie {
+		ret = append(ret, e.index)
+	}
+	return append(ret, nasIdx...)
+}
+
+type indexedElement struct {
+	index   int
+	element elements.Element
+}
+
+type indexedElements []indexedElement
+
+func (e indexedElements) Len() int           { return len(e) }
+func (e indexedElements) Less(i, j int) bool { return e[i].element.Less(e[j].element) }
+func (e indexedElements) Swap(i, j int)      { e[i], e[j] = e[j], e[i] }

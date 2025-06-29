@@ -33,3 +33,35 @@ func (e BoolElement) ToFloat() float64 {
 func (e BoolElement) ToBool() (bool, error) {
 	return e.val, nil
 }
+
+func (e BoolElement) Less(elem Element) bool {
+	b, err := elem.ToBool()
+	if err != nil {
+		return false
+	}
+	return !e.val && b
+}
+
+func (e BoolElement) LessEq(elem Element) bool {
+	b, err := elem.ToBool()
+	if err != nil {
+		return false
+	}
+	return !e.val || b
+}
+
+func (e BoolElement) Greater(elem Element) bool {
+	b, err := elem.ToBool()
+	if err != nil {
+		return false
+	}
+	return e.val && !b
+}
+
+func (e BoolElement) GreaterEq(elem Element) bool {
+	b, err := elem.ToBool()
+	if err != nil {
+		return false
+	}
+	return e.val || !b
+}

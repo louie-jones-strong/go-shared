@@ -5,6 +5,13 @@ import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
 type Element interface {
 	Set(any)
 
+	Eq(Element) bool
+	Neq(Element) bool
+	Less(Element) bool
+	LessEq(Element) bool
+	Greater(Element) bool
+	GreaterEq(Element) bool
+
 	Val() any
 
 	Type() apptype.Type
