@@ -12,15 +12,27 @@ import (
 )
 
 type DataFrame struct {
-	nameMap map[string]int
 	columns []*series.Series
+	nameMap map[string]int
 }
 
 func New(
 	columns []*series.Series,
 ) *DataFrame {
+
+	nameMap := make(map[string]int, len(columns))
+	for idx, col := range columns {
+		_, found := nameMap[col.GetName()]
+		if found {
+			// todo handle error column name already in df
+		}
+
+		nameMap[col.GetName()] = idx
+	}
+
 	return &DataFrame{
 		columns: columns,
+		nameMap: nameMap,
 	}
 }
 
@@ -159,6 +171,22 @@ func (df *DataFrame) Get(columnIdx int, rowIdx int) (elements.Element, error) {
 
 	item := col.Elem(rowIdx)
 	return item, nil
+}
+
+func (df *DataFrame) DropColumn(columnNames ...string) error {
+
+	for _, columnName := range columnNames {
+
+		idx, found := df.nameMap[columnName]
+		if !found {
+			return fmt.Errorf("column name not found in dataframe: %v", columnName)
+		}
+
+		df.columns = append(df.columns[:idx], df.columns[idx+1:]...)
+		delete(df.nameMap, columnName)
+	}
+
+	return nil
 }
 
 // Print returns a easy to read tabular format of the data frame
