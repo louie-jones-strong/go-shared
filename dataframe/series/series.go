@@ -28,15 +28,15 @@ func New(
 		elms: nil,
 	}
 
-	switch v := values.(type) {
+	switch vals := values.(type) {
 	case []string:
-		ret.elms = elements.NewElements(v, elements.NewStringElement)
+		ret.elms = elements.NewElements(vals, elements.NewStringElement)
 	case []int:
-		ret.elms = elements.NewElements(v, elements.NewIntElement)
+		ret.elms = elements.NewElements(vals, elements.NewIntElement)
 	case []float64:
-		ret.elms = elements.NewElements(v, elements.NewFloatElement)
+		ret.elms = elements.NewElements(vals, elements.NewFloatElement)
 	case []bool:
-		ret.elms = elements.NewElements(v, elements.NewBoolElement)
+		ret.elms = elements.NewElements(vals, elements.NewBoolElement)
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
@@ -49,18 +49,7 @@ func (s *Series) Len() int {
 }
 
 func (s *Series) Append(values any) {
-
-	news := New(s.name, s.t, values)
-	switch s.t {
-	case apptype.String:
-		s.elms = append(s.elms.(elements.Elements[*elements.StringElement]), news.elms.(elements.Elements[*elements.StringElement])...)
-	case apptype.Int:
-		s.elms = append(s.elms.(elements.Elements[*elements.IntElement]), news.elms.(elements.Elements[*elements.IntElement])...)
-	case apptype.Float:
-		s.elms = append(s.elms.(elements.Elements[*elements.FloatElement]), news.elms.(elements.Elements[*elements.FloatElement])...)
-	case apptype.Bool:
-		s.elms = append(s.elms.(elements.Elements[*elements.BoolElement]), news.elms.(elements.Elements[*elements.BoolElement])...)
-	}
+	s.elms.Append(values)
 }
 
 func (s *Series) Val(i int) any {

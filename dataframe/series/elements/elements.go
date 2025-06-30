@@ -26,6 +26,7 @@ type IElements interface {
 	Elem(int) Element
 	Len() int
 	Subset(indexes []int) IElements
+	Append(values ...any)
 }
 
 type Elements[T Element] []T
@@ -52,4 +53,17 @@ func (e Elements[T]) Subset(indexes []int) IElements {
 		ret[k] = e[i]
 	}
 	return ret
+}
+
+func (e Elements[T]) Append(values ...any) {
+
+	for _, value := range values {
+		val, ok := value.(T)
+		if !ok {
+			continue
+		}
+
+		e = append(e, val)
+	}
+
 }
