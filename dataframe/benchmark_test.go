@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -56,5 +57,27 @@ func Benchmark(b *testing.B) {
 5: max      NaN             11              11              NaN                -6.21355968e+10  NaN
    <string> <float>         <float>         <float>         <float>            <float>          <float>`
 		assert.Equal(b, expectedStr, str)
+
+		delegate := func(item elements.IElement) (elements.IElement, error) {
+			newElem := elements.NewFloatElement(item.ToFloat() * 10)
+			return newElem, nil
+		}
+		col1Clone.ApplyInPlace(delegate)
+
+		describeDf = df.Describe()
+		assert.NotNil(b, describeDf)
+		str = describeDf.String()
+
+		expectedStr = `[7x6] DataFrame
+   index    A               B               C               D                  E                A_Clone
+0: count    11              11              11              11                 11               11
+1: sum      NaN             66              66              NaN                -6.834915648e+11 NaN
+2: mean     6               6               6               0.5454545454545454 -6.21355968e+10  60
+3: std      3.3166247903554 3.3166247903554 3.3166247903554 0.5222329678670935 0                33.166247903554
+4: min      NaN             1               1               NaN                -6.21355968e+10  NaN
+5: max      NaN             11              11              NaN                -6.21355968e+10  NaN
+   <string> <float>         <float>         <float>         <float>            <float>          <float>`
+		assert.Equal(b, expectedStr, str)
+
 	}
 }

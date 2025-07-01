@@ -25,6 +25,7 @@ type IElement interface {
 }
 
 type IElements interface {
+	AllElems() []IElement
 	Clone() IElements
 	Elem(int) IElement
 	Len() int
@@ -48,6 +49,14 @@ func BuildElements[V any, E IElement](
 	}
 
 	return elements
+}
+
+func (e Elements[T]) AllElems() []IElement {
+	ret := make([]IElement, len(e))
+	for i := 0; i < len(e); i++ {
+		ret[i] = e[i]
+	}
+	return ret
 }
 
 func (e Elements[T]) Clone() IElements {

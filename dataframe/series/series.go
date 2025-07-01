@@ -192,8 +192,38 @@ func (s Series) Max() float64 {
 	return maximum
 }
 
-type Indexes interface {
+type applyFunc[In elements.IElement, Out elements.IElement] func(item In) (Out, error)
+
+func Apply[In elements.IElement, Out elements.IElement](
+	elems elements.Elements[In],
+	delegate applyFunc[In, Out],
+) (elements.Elements[Out], error) {
+
+	newElements := make([]Out, len(elems))
+	for i := 0; i < elems.Len(); i++ {
+
+		newElem, err := delegate(elems[i])
+		if err != nil {
+			return nil, err
+		}
+
+		newElements[i] = newElem
+
+	}
+	return newElements, nil
 }
+
+func (s *Series) ApplyInPlace(delegate applyFunc[elements.IElement, elements.IElement]) {
+	newElms, err := Apply(s.elms.AllElems(), delegate)
+	if err != nil {
+		panic(err)
+	}
+
+	temp := elements.NewElements(newElms)
+	s.elms = &temp
+}
+
+type Indexes interface{}
 
 func parseIndexes(l int, indexes Indexes) ([]int, error) {
 	var ret []int
