@@ -1,80 +1,84 @@
 {
 	"version": "2.0.0",
+	"type": "shell",
+	"problemMatcher": [],
+	"presentation": {
+		"clear": true,
+		"showReuseMessage": false,
+	},
+	"inputs": [
+		{
+			"id": "OpenBenchmarkVisulizationWebsite",
+			"type": "command",
+			"command": "simpleBrowser.show",
+			"args": [
+				"http://localhost:5555/ui/flamegraph"
+			]
+		}
+	],
 	"tasks": [
 		{
-			"label": "Vendor",
-			"type": "shell",
-			"command": "go mod vendor && go mod tidy",
-			"problemMatcher": [],
-			"presentation": {
-				"clear": true
-			}
+			"hide": true,
+			"label": "Run Benchmarks",
+			"detail": "Vist: http://localhost:5555/ui/flamegraph to view visulizations. To be able to use the graph visulization option you will need to instal graphviz from: https://graphviz.org/download/",
+			"command": "go test ./dataframe -run Benchmark -bench=Benchmark -cpuprofile=cpuprof.out",
 		},
 		{
-			"label": "Generate",
-			"type": "shell",
-			"command": "go generate ./...",
+			"hide": true,
+			"label": "Run Benchmark Visulization Webserver",
 			"problemMatcher": [],
-			"presentation": {
-				"clear": true
-			}
+			"command": "go tool pprof -http=:5555 cpuprof.out"
+		},
+		{
+			"label": "Run and Veiw Benchmarks",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Run Benchmarks",
+				"Run Benchmark Visulization Webserver",
+			],
+		},
+		{
+			"label": "Clean Test Cache",
+			"command": "go clean -testcache",
 		},
 		{
 			"label": "Test Short",
-			"type": "shell",
 			"command": "go run gotest.tools/gotestsum@latest --format-icons hivis -- ./... -cover -short",
-			"problemMatcher": [],
-			"presentation": {
-				"clear": true
-			}
 		},
 		{
 			"label": "Test All",
-			"type": "shell",
 			"command": "go run gotest.tools/gotestsum@latest --format-icons hivis -- ./... -cover",
-			"problemMatcher": [],
-			"presentation": {
-				"clear": true
-			}
 		},
 		{
-			"label": "Lint",
-			"type": "shell",
-			"command": "go run github.com/mgechev/revive@latest -config revive.toml -formatter friendly ./src/...",
-			"problemMatcher": [],
-			"presentation": {
-				"clear": true
-			}
+			"label": "Lint go files",
+			"command": "go run github.com/mgechev/revive@v1.7.0 -config revive.toml -formatter friendly ./src/...",
 		},
 		{
 			"label": "Spell Check",
-			"type": "shell",
-			"command": "cspell \"src\" --no-progress",
-			"problemMatcher": [],
-			"presentation": {
-				"clear": true
-			}
+			"detail": "Check for spelling mistakes in the codebase. To be able to use this task you will need to instal cspell using: `npm install -g cspell@latest`",
+			"command": "cspell \".\" --no-progress",
+		},
+		{
+			"label": "Spelling mistakes to file",
+			"command": "cspell --words-only --unique \".\" | sort --ignore-case >> project-words.txt",
 		},
 		{
 			"label": "Check All",
-			"type": "shell",
 			"dependsOrder": "parallel",
 			"dependsOn": [
 				"Test All",
-				"Lint",
+				"Lint go files",
 				"Spell Check"
 			],
-			"problemMatcher": [],
 		},
 		{
-			"label": "Generate & Check All",
-			"type": "shell",
-			"dependsOrder": "sequence",
+			"label": "Check All Short",
+			"dependsOrder": "parallel",
 			"dependsOn": [
-				"Generate",
-				"Check All"
+				"Test Short",
+				"Lint go files",
+				"Spell Check"
 			],
-			"problemMatcher": []
-		}
+		},
 	]
 }

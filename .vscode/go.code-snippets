@@ -1,0 +1,260 @@
+{
+	// Place your combat-service workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"Check Err with no return": {
+		"scope": "go",
+		"prefix": "er",
+		"body": [
+			"if err != nil {",
+			"\t$1",
+			"}"
+		]
+	},
+	"Handle Err with only error returned": {
+		"scope": "go",
+		"prefix": "er1",
+		"body": [
+			"if err != nil {",
+			"\treturn err",
+			"}"
+		]
+	},
+	"Handle Err with 2 returns": {
+		"scope": "go",
+		"prefix": "er2",
+		"body": [
+			"if err != nil {",
+			"\treturn nil, err",
+			"}"
+		]
+	},
+	"Handle Err with 3 returns": {
+		"scope": "go",
+		"prefix": "er3",
+		"body": [
+			"if err != nil {",
+			"\treturn nil, nil, err",
+			"}"
+		]
+	},
+	"Handle Err with 4 returns": {
+		"scope": "go",
+		"prefix": "er4",
+		"body": [
+			"if err != nil {",
+			"\treturn nil, nil, nil, err",
+			"}"
+		]
+	},
+	"Unit Test": {
+		"scope": "go",
+		"prefix": "ut",
+		"description": "Unit Test function that uses a table of test cases, and asserts that the function returns the expected result",
+		"body": [
+			"func TestUnit_${1:FunctionName}(t *testing.T) {",
+			"",
+			"\ttests := []struct {",
+			"\t\tname        string",
+			"\t\tinput1  int",
+			"\t\tinput2  int",
+			"\t\texpectedRes int",
+			"\t\texpectedErr error",
+			"\t}{",
+			"\t\t{",
+			"\t\t\tname:        \"Test Case 1\",",
+			"\t\t\tinput1: 1,",
+			"\t\t\tinput2: 2,",
+			"\t\t\texpectedRes: 0,",
+			"\t\t\texpectedErr: nil,",
+			"\t\t},",
+			"\t}",
+			"",
+			"\tfor _, tc := range tests {",
+			"\t\tt.Run(tc.name, func(t *testing.T) {",
+			"",
+			"\t\t\tres, err := ${1:FunctionName}(tc.input1, tc.input2)",
+			"",
+			"\t\t\tif tc.expectedErr != nil {",
+			"\t\t\t\tassert.EqualError(t, err, tc.expectedErr.Error())",
+			"\t\t\t\tassert.Nil(t, res)",
+			"\t\t\t} else {",
+			"\t\t\t\tassert.NoError(t, err)",
+			"\t\t\t\tassert.Equal(t, tc.expectedRes, res)",
+			"\t\t\t}",
+			"\t\t})",
+			"\t}",
+			"}"
+		]
+	},
+	"Unit Test (inputData func)": {
+		"scope": "go",
+		"prefix": "ut",
+		"description": "Unit Test function that uses a table of test cases, and asserts that the function returns the expected result",
+		"body": [
+			"func TestUnit_${1:FunctionName}(t *testing.T) {",
+			"",
+			"\ttype inputData struct {",
+			"\t\tinput1 int",
+			"\t\tinput2 int",
+			"\t}",
+			"",
+			"\ttests := []struct {",
+			"\t\tname        string",
+			"\t\tsetupInput  func() inputData",
+			"\t\texpectedRes int",
+			"\t\texpectedErr error",
+			"\t}{",
+			"\t\t{",
+			"\t\t\tname:        \"Test Case 1\",",
+			"\t\t\tsetupInput:  func() inputData {",
+			"\t\t\t\treturn inputData{",
+			"\t\t\t\t\tinput1: 1,",
+			"\t\t\t\t\tinput2: 2,",
+			"\t\t\t\t}",
+			"\t\t\t},",
+			"\t\t\texpectedRes: 0,",
+			"\t\t\texpectedErr: nil,",
+			"\t\t},",
+			"\t}",
+			"",
+			"\tfor _, tc := range tests {",
+			"\t\tt.Run(tc.name, func(t *testing.T) {",
+			"\t\t\tif tc.setupInput == nil {",
+			"\t\t\t\tt.Fatal(\"setupInput must not be nil\")",
+			"\t\t\t}",
+			"",
+			"\t\t\tinput := tc.setupInput()",
+			"",
+			"\t\t\tres, err := ${1:FunctionName}(input.input1, input.input2)",
+			"",
+			"\t\t\tif tc.expectedErr != nil {",
+			"\t\t\t\tassert.EqualError(t, err, tc.expectedErr.Error())",
+			"\t\t\t\tassert.Nil(t, res)",
+			"\t\t\t} else {",
+			"\t\t\t\tassert.NoError(t, err)",
+			"\t\t\t\tassert.Equal(t, tc.expectedRes, res)",
+			"\t\t\t}",
+			"\t\t})",
+			"\t}",
+			"}"
+		]
+	},
+	"Unit Test (inputData & mocks func)": {
+		"scope": "go",
+		"prefix": "ut",
+		"description": "Unit Test function that uses a table of test cases, and asserts that the function returns the expected result",
+		"body": [
+			"func TestUnit_${1:FunctionName}(t *testing.T) {",
+			"",
+			"\ttype inputData struct {",
+			"\t\tinput1 int",
+			"\t\tinput2 int",
+			"\t\tsetupMocks func(mocks)",
+			"\t}",
+			"",
+			"\ttests := []struct {",
+			"\t\tname        string",
+			"\t\tsetupInput  func(mocks) inputData",
+			"\t\texpectedRes int",
+			"\t\texpectedErr error",
+			"\t}{",
+			"\t\t{",
+			"\t\t\tname:        \"Test Case 1\",",
+			"\t\t\tsetupInput:  func(m mocks) inputData {",
+			"\t\t\t\treturn inputData{",
+			"\t\t\t\t\tinput1: 1,",
+			"\t\t\t\t\tinput2: 2,",
+			"\t\t\t\t\tsetupMocks: func(m mocks){",
+			"\t\t\t\t\t\t",
+			"\t\t\t\t\t},",
+			"\t\t\t\t}",
+			"\t\t\t},",
+			"\t\t\texpectedRes: 0,",
+			"\t\t\texpectedErr: nil,",
+			"\t\t},",
+			"\t}",
+			"",
+			"\tfor _, tc := range tests {",
+			"\t\tt.Run(tc.name, func(t *testing.T) {",
+			"\t\t\tif tc.setupInput == nil {",
+			"\t\t\t\tt.Fatal(\"setupInput must not be nil\")",
+			"\t\t\t}",
+			"",
+			"\t\t\tm := createMocks(t)",
+			"",
+			"\t\t\tinput := tc.setupInput(m)",
+			"",
+			"\t\t\tif input.setupMocks != nil {",
+			"\t\t\t\tinput.setupMocks(m)",
+			"\t\t\t}",
+			"",
+			"\t\t\tres, err := ${1:FunctionName}(input.input1, input.input2)",
+			"",
+			"\t\t\tif tc.expectedErr != nil {",
+			"\t\t\t\tassert.EqualError(t, err, tc.expectedErr.Error())",
+			"\t\t\t\tassert.Nil(t, res)",
+			"\t\t\t} else {",
+			"\t\t\t\tassert.NoError(t, err)",
+			"\t\t\t\tassert.Equal(t, tc.expectedRes, res)",
+			"\t\t\t}",
+			"\t\t})",
+			"\t}",
+			"}"
+		]
+	},
+	"Return Checker: CheckOne": {
+		"scope": "go",
+		"prefix": "rc",
+		"body": [
+			"${2:TypeAcronym}Rc := returnchecker.NewOne[${1:Type}](t)",
+		]
+	},
+	"Constructor": {
+		"scope": "go",
+		"prefix": "new",
+		"body": [
+			"// New${1:Type} creates a new ${1:Type} instance",
+			"func New${1:Type}(",
+			"\t\t",
+			"\t) *${1:Type} {",
+			"\treturn &${1:Type}{",
+			"\t\t",
+			"\t}",
+			"}",
+		]
+	},
+	"Constructor with error": {
+		"scope": "go",
+		"prefix": "newerr",
+		"body": [
+			"// New${1:Type} creates a new ${1:Type} instance",
+			"func New${1:Type}(",
+			"\t\t",
+			"\t) (*${1:Type}, error) {",
+			"\t",
+			"\tif {",
+			"\t\treturn nil, fmt.Errorf(\"\")",
+			"\t}",
+			"\tnew${1:Type} := &${1:Type}{",
+			"\t\t",
+			"\t}",
+			"\t",
+			"\treturn new${1:Type}, nil",
+			"}",
+		]
+	}
+}
