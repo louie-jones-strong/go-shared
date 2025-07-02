@@ -2,7 +2,6 @@ package storage
 
 import (
 	"encoding/csv"
-	"os"
 
 	"github.com/louie-jones-strong/go-shared/dataframe"
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
@@ -20,7 +19,7 @@ func NewDataFrameStorage(filePath string) *DataFrameStorage {
 }
 
 func (s *DataFrameStorage) Save(df *dataframe.DataFrame) error {
-	file, err := os.OpenFile(s.filePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	file, err := OpenFileForWriting(s.filePath)
 	if err != nil {
 		return err
 	}
@@ -61,7 +60,7 @@ func (s *DataFrameStorage) Save(df *dataframe.DataFrame) error {
 
 func (s *DataFrameStorage) Load() (*dataframe.DataFrame, error) {
 
-	file, err := os.Open(s.filePath)
+	file, err := OpenFileForReading(s.filePath)
 	if err != nil {
 		return nil, err
 	}

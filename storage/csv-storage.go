@@ -1,8 +1,6 @@
 package storage
 
 import (
-	"os"
-
 	"github.com/gocarina/gocsv"
 )
 
@@ -18,7 +16,8 @@ func NewCSVStorage[R any](filePath string) *CSVStorage[R] {
 }
 
 func (s *CSVStorage[R]) Save(rows []R) error {
-	file, err := os.Create(s.filePath)
+
+	file, err := OpenFileForWriting(s.filePath)
 	if err != nil {
 		return err
 	}
@@ -33,7 +32,7 @@ func (s *CSVStorage[R]) Save(rows []R) error {
 
 func (s *CSVStorage[R]) Load() ([]R, error) {
 
-	file, err := os.Open(s.filePath)
+	file, err := OpenFileForReading(s.filePath)
 	if err != nil {
 		return nil, err
 	}

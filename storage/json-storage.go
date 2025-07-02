@@ -2,9 +2,6 @@ package storage
 
 import (
 	"encoding/json"
-	"log"
-	"os"
-	"time"
 )
 
 type JSONStorage[M any] struct {
@@ -19,7 +16,6 @@ func NewJSONStorage[M any](filePath string) *JSONStorage[M] {
 }
 
 func (s *JSONStorage[M]) Save(obj M) error {
-	start := time.Now()
 
 	// Marshal the object to JSON
 	data, err := json.MarshalIndent(obj, "", "  ")
@@ -27,8 +23,7 @@ func (s *JSONStorage[M]) Save(obj M) error {
 		return err
 	}
 
-	// Open the file for writing (create if not exists, truncate if it does)
-	file, err := os.OpenFile(s.filePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	file, err := OpenFileForWriting(s.filePath)
 	if err != nil {
 		return err
 	}
@@ -39,22 +34,13 @@ func (s *JSONStorage[M]) Save(obj M) error {
 		return err
 	}
 
-	log.Printf("Saving file: %v, took: %v", s.filePath, time.Since(start))
 	return nil
 }
 
 func (s *JSONStorage[M]) Load() (M, error) {
-	start := time.Now()
-
 	var output M
 
-	absPath, err := Check(s.filePath)
-	if err != nil {
-		return output, err
-	}
-
-	// Open the file for reading
-	file, err := os.Open(absPath)
+	file, err := OpenFileForReading(s.filePath)
 	if err != nil {
 		return output, err
 	}
@@ -66,6 +52,5 @@ func (s *JSONStorage[M]) Load() (M, error) {
 		return output, err
 	}
 
-	log.Printf("Loading file: %v, took: %v", s.filePath, time.Since(start))
 	return output, nil
 }
