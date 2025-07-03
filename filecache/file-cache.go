@@ -76,7 +76,7 @@ func (fc *FileCache[K]) TryLoadFileWithExpire(key K, expireDuration time.Duratio
 
 	filePath := fi.GetFilePath(fc.itemFolderPath)
 
-	data, err := os.ReadFile(filePath) // Read entire file
+	data, err := storage.ReadBytesFromFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (fc *FileCache[K]) SaveFileWithExt(key K, data []byte, ext string) error {
 
 	filePath := fi.GetFilePath(fc.itemFolderPath)
 
-	err := os.WriteFile(filePath, data, 0644)
+	err := storage.WriteBytesToFile(filePath, data)
 	if err != nil {
 		return err
 	}

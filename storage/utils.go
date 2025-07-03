@@ -58,3 +58,34 @@ func OpenFileForWriting(filePath string) (*os.File, error) {
 
 	return file, nil
 }
+
+func ReadBytesFromFile(filePath string) ([]byte, error) {
+
+	filePath, err := Check(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file for reading with err: %v", err)
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func WriteBytesToFile(filePath string, data []byte) error {
+
+	file, err := OpenFileForWriting(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
