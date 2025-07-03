@@ -9,14 +9,17 @@ import (
 type CachedScrapper struct {
 	siteCache *filecache.FileCache[string]
 	scrapper  Scrapper
+	fileExt   string
 }
 
 func NewCachedScrapper(
 	siteCache *filecache.FileCache[string],
+	fileExt string,
 ) *CachedScrapper {
 
 	return &CachedScrapper{
 		siteCache: siteCache,
+		fileExt:   fileExt,
 	}
 }
 
@@ -52,7 +55,7 @@ func (cs *CachedScrapper) ScrapURLWithCache(url string, expireDuration time.Dura
 	}
 
 	// save to cache
-	err = cs.siteCache.SaveFileWithExt(url, data, ".html")
+	err = cs.siteCache.SaveFileWithExt(url, data, cs.fileExt)
 	if err != nil {
 		return nil, err
 	}
