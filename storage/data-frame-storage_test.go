@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"path"
 	"testing"
 
 	"github.com/louie-jones-strong/go-shared/dataframe"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestDataFrameStorage_CSV(t *testing.T) {
-	storage := NewDataFrameStorage("df_test.csv")
+	storage := NewDataFrameStorage(path.Join("test-data", "df_test.csv"))
 
 	expectedData := dataframe.New(
 		[]*series.Series{

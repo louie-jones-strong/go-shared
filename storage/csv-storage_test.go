@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,7 @@ type Student struct {
 }
 
 func TestCSVStorage(t *testing.T) {
-	storage := NewCSVStorage[*Student]("csv_test.csv")
+	storage := NewCSVStorage[*Student](path.Join("test-data", "csv_test.csv"))
 
 	expectedData := []*Student{
 		{Name: "Alice", Age: 20, Grade: "A"},

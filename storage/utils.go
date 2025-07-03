@@ -33,12 +33,12 @@ func Check(path string) (string, error) {
 func OpenFileForReading(filePath string) (*os.File, error) {
 	filePath, err := Check(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open file for reading with err: %v", err)
 	}
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open file for reading with err: %v", err)
 	}
 
 	return file, nil
@@ -48,12 +48,12 @@ func OpenFileForWriting(filePath string) (*os.File, error) {
 
 	err := createDir(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open file for writing with err: %v", err)
 	}
 
 	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open file for writing with err: %v", err)
 	}
 
 	return file, nil
