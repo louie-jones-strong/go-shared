@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"time"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
@@ -37,6 +38,8 @@ func New(
 		ret.elms = elements.NewElements(vals, elements.NewFloatElement)
 	case []bool:
 		ret.elms = elements.NewElements(vals, elements.NewBoolElement)
+	case []time.Time:
+		ret.elms = elements.NewElements(vals, elements.NewDateTimeElement)
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}

@@ -1,9 +1,12 @@
 package elements
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type supportedTypes interface {
-	string | int | float64 | bool
+	string | int | float64 | bool | time.Time
 }
 
 type BaseElement[T supportedTypes] struct {
