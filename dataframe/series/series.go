@@ -68,6 +68,14 @@ func (s *Series) GetType() apptype.Type {
 	return s.t
 }
 
+func (s Series) Values() []any {
+	ret := make([]any, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = s.elms.Elem(i).Val()
+	}
+	return ret
+}
+
 func (s Series) ToStrings() ([]string, error) {
 	ret := make([]string, s.Len())
 	for i := 0; i < s.Len(); i++ {
