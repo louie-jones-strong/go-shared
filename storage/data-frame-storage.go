@@ -67,6 +67,7 @@ func (s *DataFrameStorage) Load() (*dataframe.DataFrame, error) {
 	defer file.Close()
 
 	reader := csv.NewReader(file)
+	reader.TrimLeadingSpace = true
 
 	records, err := reader.ReadAll()
 	if err != nil {
