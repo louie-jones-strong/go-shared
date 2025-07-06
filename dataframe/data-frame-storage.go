@@ -1,11 +1,11 @@
-package storage
+package dataframe
 
 import (
 	"encoding/csv"
 
-	"github.com/louie-jones-strong/go-shared/dataframe"
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
+	"github.com/louie-jones-strong/go-shared/storage"
 )
 
 type DataFrameStorage struct {
@@ -18,8 +18,8 @@ func NewDataFrameStorage(filePath string) *DataFrameStorage {
 	}
 }
 
-func (s *DataFrameStorage) Save(df *dataframe.DataFrame) error {
-	file, err := OpenFileForWriting(s.filePath)
+func (s *DataFrameStorage) Save(df *DataFrame) error {
+	file, err := storage.OpenFileForWriting(s.filePath)
 	if err != nil {
 		return err
 	}
@@ -58,9 +58,9 @@ func (s *DataFrameStorage) Save(df *dataframe.DataFrame) error {
 	return nil
 }
 
-func (s *DataFrameStorage) Load() (*dataframe.DataFrame, error) {
+func (s *DataFrameStorage) Load() (*DataFrame, error) {
 
-	file, err := OpenFileForReading(s.filePath)
+	file, err := storage.OpenFileForReading(s.filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (s *DataFrameStorage) Load() (*dataframe.DataFrame, error) {
 		cols[colIdx] = series.New(header, apptype.String, values)
 	}
 
-	df := dataframe.New(
+	df := New(
 		cols,
 	)
 

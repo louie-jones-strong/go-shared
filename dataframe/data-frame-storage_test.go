@@ -1,10 +1,9 @@
-package storage
+package dataframe
 
 import (
 	"path"
 	"testing"
 
-	"github.com/louie-jones-strong/go-shared/dataframe"
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
 	"github.com/stretchr/testify/assert"
@@ -13,7 +12,7 @@ import (
 func TestDataFrameStorage_CSV(t *testing.T) {
 	storage := NewDataFrameStorage(path.Join("test-data", "df_test.csv"))
 
-	expectedData := dataframe.New(
+	expectedData := New(
 		[]*series.Series{
 			series.New("name", apptype.String, []string{"Alice", "Bob"}),
 			series.New("age", apptype.String, []string{"20", "22"}),
