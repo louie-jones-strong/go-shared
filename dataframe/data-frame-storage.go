@@ -82,12 +82,33 @@ func (s *DataFrameStorage) Load() (*DataFrame, error) {
 
 		header := records[0][colIdx]
 
-		values := make([]string, numRows-1)
+		strings := make([]string, numRows-1)
 		for rowIdx := 1; rowIdx < numRows; rowIdx++ {
-			values[rowIdx-1] = records[rowIdx][colIdx]
+			strings[rowIdx-1] = records[rowIdx][colIdx]
 		}
 
-		cols[colIdx] = series.New(header, apptype.String, values)
+		colType, err := apptype.FindType(strings)
+		if err != nil {
+			return nil, err
+		}
+
+		var values any
+		values = strings
+		switch colType {
+		case apptype.DateTime:
+			values, err = apptype.ConvertArr(strings, apptype.StringToTime)
+		case apptype.Int:
+			values, err = apptype.ConvertArr(strings, apptype.StringToInt)
+		case apptype.Float:
+			values, err = apptype.ConvertArr(strings, apptype.StringToFloat)
+		case apptype.Bool:
+			values, err = apptype.ConvertArr(strings, apptype.StringToBool)
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		cols[colIdx] = series.New(header, values)
 	}
 
 	df := New(

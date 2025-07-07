@@ -3,8 +3,8 @@ package dataframe
 import (
 	"path"
 	"testing"
+	"time"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,9 +14,11 @@ func TestDataFrameStorage_CSV(t *testing.T) {
 
 	expectedData := New(
 		[]*series.Series{
-			series.New("name", apptype.String, []string{"Alice", "Bob"}),
-			series.New("age", apptype.String, []string{"20", "22"}),
-			series.New("grade", apptype.String, []string{"A", "B"}),
+			series.New("name", []string{"Alice", "Bob"}),
+			series.New("age", []int{20, 22}),
+			series.New("marks", []float64{100.1, 60}),
+			series.New("grade", []string{"A", "B"}),
+			series.New("date", []time.Time{time.Now(), time.Now()}),
 		},
 	)
 

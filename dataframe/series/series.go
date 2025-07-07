@@ -19,27 +19,29 @@ type Series struct {
 
 func New(
 	name string,
-	t apptype.Type,
 	values any,
 ) *Series {
 
 	ret := &Series{
 		name: name,
-		t:    t,
-		elms: nil,
 	}
 
 	switch vals := values.(type) {
 	case []string:
 		ret.elms = elements.NewElements(vals, elements.NewStringElement)
+		ret.t = apptype.String
 	case []int:
 		ret.elms = elements.NewElements(vals, elements.NewIntElement)
+		ret.t = apptype.Int
 	case []float64:
 		ret.elms = elements.NewElements(vals, elements.NewFloatElement)
+		ret.t = apptype.Float
 	case []bool:
 		ret.elms = elements.NewElements(vals, elements.NewBoolElement)
+		ret.t = apptype.Bool
 	case []time.Time:
 		ret.elms = elements.NewElements(vals, elements.NewDateTimeElement)
+		ret.t = apptype.DateTime
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}

@@ -3,7 +3,6 @@ package dataframe
 import (
 	"testing"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,7 +48,7 @@ func TestUnit_print(t *testing.T) {
 			name: "empty row",
 			df: New(
 				[]*series.Series{
-					series.New("name", apptype.String, []string{}),
+					series.New("name", []string{}),
 				},
 			),
 			showHeader:  true,
@@ -64,9 +63,9 @@ func TestUnit_print(t *testing.T) {
 			name: "show all: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", apptype.String, []string{"Alice", "Bob"}),
-					series.New("age", apptype.String, []string{"20", "22"}),
-					series.New("grade", apptype.String, []string{"A", "B"}),
+					series.New("name", []string{"Alice", "Bob"}),
+					series.New("age", []string{"20", "22"}),
+					series.New("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:  true,
@@ -83,9 +82,9 @@ func TestUnit_print(t *testing.T) {
 			name: "show only header: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", apptype.String, []string{"Alice", "Bob"}),
-					series.New("age", apptype.String, []string{"20", "22"}),
-					series.New("grade", apptype.String, []string{"A", "B"}),
+					series.New("name", []string{"Alice", "Bob"}),
+					series.New("age", []string{"20", "22"}),
+					series.New("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:  true,
@@ -100,9 +99,9 @@ Bob   22  B`,
 			name: "show only index: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", apptype.String, []string{"Alice", "Bob"}),
-					series.New("age", apptype.String, []string{"20", "22"}),
-					series.New("grade", apptype.String, []string{"A", "B"}),
+					series.New("name", []string{"Alice", "Bob"}),
+					series.New("age", []string{"20", "22"}),
+					series.New("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:  false,
@@ -116,9 +115,9 @@ Bob   22  B`,
 			name: "show only types: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", apptype.String, []string{"Alice", "Bob"}),
-					series.New("age", apptype.String, []string{"20", "22"}),
-					series.New("grade", apptype.String, []string{"A", "B"}),
+					series.New("name", []string{"Alice", "Bob"}),
+					series.New("age", []string{"20", "22"}),
+					series.New("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:  false,
@@ -133,7 +132,7 @@ Bob      22       B
 			name: "show all: 11 rows all strings",
 			df: New(
 				[]*series.Series{
-					series.New("test", apptype.String, []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
+					series.New("test", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
 				},
 			),
 			showHeader:  true,
@@ -158,7 +157,7 @@ Bob      22       B
 			name: "show all: 11 rows all ints",
 			df: New(
 				[]*series.Series{
-					series.New("test", apptype.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.New("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
 				},
 			),
 			showHeader:  true,
@@ -183,10 +182,10 @@ Bob      22       B
 			name: "show all: 11 rows of all types",
 			df: New(
 				[]*series.Series{
-					series.New("A", apptype.String, []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
-					series.New("B", apptype.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-					series.New("C", apptype.Float, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-					series.New("D", apptype.Bool, []bool{true, false, true, false, true, false, true, false, true, false, true}),
+					series.New("A", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
+					series.New("B", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.New("C", []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.New("D", []bool{true, false, true, false, true, false, true, false, true, false, true}),
 				},
 			),
 			showHeader:  true,
@@ -249,12 +248,12 @@ func TestUnit_Describe(t *testing.T) {
 			name: "1 int column",
 			df: New(
 				[]*series.Series{
-					series.New("test", apptype.Int, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.New("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
 				},
 			),
 			expectedRes: New(
 				[]*series.Series{
-					series.New("index", apptype.String, []string{
+					series.New("index", []string{
 						"count",
 						"sum",
 						"mean",
@@ -265,7 +264,7 @@ func TestUnit_Describe(t *testing.T) {
 						// "75%",
 						"max",
 					}),
-					series.New("test", apptype.Float, []float64{
+					series.New("test", []float64{
 						11,
 						66,
 						6,

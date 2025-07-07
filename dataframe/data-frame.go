@@ -6,7 +6,6 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
 	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
 )
@@ -20,20 +19,17 @@ func New(
 	columns []*series.Series,
 ) *DataFrame {
 
-	nameMap := make(map[string]int, len(columns))
-	for idx, col := range columns {
-		_, found := nameMap[col.GetName()]
-		if found {
-			// todo handle error column name already in df
-		}
-
-		nameMap[col.GetName()] = idx
+	df := &DataFrame{
+		columns: make([]*series.Series, 0, len(columns)),
+		nameMap: make(map[string]int, len(columns)),
 	}
 
-	return &DataFrame{
-		columns: columns,
-		nameMap: nameMap,
+	err := df.AddColumns(columns)
+	if err != nil {
+		panic(fmt.Sprintf("Error creating df: %v", err))
 	}
+
+	return df
 }
 
 func (df *DataFrame) NumColumns() int {
@@ -66,7 +62,7 @@ func (df *DataFrame) AddColumns(columns []*series.Series) error {
 }
 
 func (df *DataFrame) AddColumn(column *series.Series) error {
-	if column.Len() != df.NumRows() {
+	if df.NumColumns() > 0 && column.Len() != df.NumRows() {
 		return fmt.Errorf("Add Column called with column length not matching the dataframe's length")
 	}
 
@@ -325,7 +321,7 @@ func (df *DataFrame) Describe() *DataFrame {
 
 	columns := make([]*series.Series, nCols+1)
 
-	columns[0] = series.New("index", apptype.String, []string{
+	columns[0] = series.New("index", []string{
 		"count",
 		"sum",
 		"mean",
@@ -348,7 +344,7 @@ func (df *DataFrame) Describe() *DataFrame {
 			col.Max(),
 		}
 
-		columns[c+1] = series.New(col.GetName(), apptype.Float, values)
+		columns[c+1] = series.New(col.GetName(), values)
 	}
 
 	return New(columns)
