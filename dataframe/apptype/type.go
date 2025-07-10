@@ -58,7 +58,38 @@ func FindType(arr []string) (Type, error) {
 }
 
 func StringToTime(str string) (time.Time, error) {
-	return time.Parse(time.RFC3339, str)
+
+	timeFormats := []string{
+		time.Layout,
+		time.ANSIC,
+		time.UnixDate,
+		time.RubyDate,
+		time.RFC822,
+		time.RFC822Z,
+		time.RFC850,
+		time.RFC1123,
+		time.RFC1123Z,
+		time.RFC3339,
+		time.RFC3339Nano,
+		time.Kitchen,
+		time.Stamp,
+		time.StampMilli,
+		time.StampMicro,
+		time.StampNano,
+		time.DateTime,
+		time.DateOnly,
+		time.TimeOnly,
+	}
+
+	for _, timeFormat := range timeFormats {
+		t, err := time.Parse(timeFormat, str)
+		if err == nil {
+			return t, nil
+		}
+	}
+
+	var out time.Time
+	return out, fmt.Errorf("cannot parse string: \"%v\" as time", str)
 }
 
 func StringToInt(str string) (int, error) {
