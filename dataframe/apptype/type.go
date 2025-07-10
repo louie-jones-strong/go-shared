@@ -24,6 +24,7 @@ func FindType(arr []string) (Type, error) {
 		}
 		if _, err := StringToTime(str); err == nil {
 			hasDates = true
+			continue
 		}
 		if _, err := StringToInt(str); err == nil {
 			hasInts = true
