@@ -66,6 +66,8 @@ func (df *DataFrame) AddColumn(column *series.Series) error {
 		return fmt.Errorf("Add Column called with column length not matching the dataframe's length")
 	}
 
+	colName := column.GetName()
+	df.nameMap[colName] = len(df.columns)
 	df.columns = append(df.columns, column)
 	return nil
 }

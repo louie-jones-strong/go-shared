@@ -21,6 +21,10 @@ func (e DateTimeElement) Type() apptype.Type {
 	return apptype.String
 }
 
+func (e DateTimeElement) ToString() string {
+	return e.val.Format(time.RFC3339)
+}
+
 func (e DateTimeElement) ToInt() (int, error) {
 	return int(e.val.Unix()), nil
 }

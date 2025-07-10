@@ -12,13 +12,14 @@ import (
 func TestDataFrameStorage_CSV(t *testing.T) {
 	storage := NewDataFrameStorage(path.Join("test-data", "df_test.csv"))
 
+	dateTime := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
 	expectedData := New(
 		[]*series.Series{
 			series.New("name", []string{"Alice", "Bob"}),
 			series.New("age", []int{20, 22}),
 			series.New("marks", []float64{100.1, 60}),
 			series.New("grade", []string{"A", "B"}),
-			series.New("date", []time.Time{time.Now(), time.Now()}),
+			series.New("date", []time.Time{dateTime, dateTime}),
 		},
 	)
 
