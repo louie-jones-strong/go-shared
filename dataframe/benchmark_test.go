@@ -27,6 +27,6 @@ func Benchmark(b *testing.B) {
 		describeDf := df.Describe()
 		assert.NotNil(b, describeDf)
 
-		describeDf.Print(true, true, true, "Describe")
+		describeDf.String()
 	}
 }

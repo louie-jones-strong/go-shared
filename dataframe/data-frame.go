@@ -187,11 +187,18 @@ func (df *DataFrame) DropColumn(columnNames ...string) error {
 	return nil
 }
 
+// String implements the Stringer interface for DataFrame
+func (df DataFrame) String() (str string) {
+	return df.Print(true, true, true, 5, 3, "DataFrame")
+}
+
 // Print returns a easy to read tabular format of the data frame
 func (df *DataFrame) Print(
 	showHeaders bool,
 	showTypes bool,
 	showIndexes bool,
+	headerRows int,
+	tailRows int,
 	class string,
 ) string {
 
@@ -204,7 +211,14 @@ func (df *DataFrame) Print(
 		return fmt.Sprintf("%v: Nil", class)
 	}
 
-	nRows := df.NumRows()
+	totalRows := df.NumRows()
+	hasDotRow := true
+	if headerRows+tailRows+1 >= totalRows {
+		headerRows = min(headerRows+tailRows+1, totalRows)
+		tailRows = 0
+		hasDotRow = false
+	}
+
 	nCols := df.NumColumns()
 	if nCols == 0 {
 		if class == "" {
@@ -225,6 +239,11 @@ func (df *DataFrame) Print(
 			return strings.Repeat(" ", nChar-utf8.RuneCountInString(s)) + s
 		}
 		return s
+	}
+
+	nRows := headerRows + tailRows
+	if hasDotRow {
+		nRows++
 	}
 
 	nMatRows := nRows
@@ -268,20 +287,41 @@ func (df *DataFrame) Print(
 		}
 	}
 
-	// add data to matrix
-	for r := 0; r < nRows; r++ {
-
+	addRow := func(rIdx int, mIdx int) {
 		if showIndexes {
-			addToMatrix(r+rowOffset, 0, strconv.Itoa(r)+":")
+			addToMatrix(mIdx, 0, strconv.Itoa(rIdx)+":")
 		}
 
 		for c := 0; c < nCols; c++ {
-			val, err := df.Get(c, r)
+			val, err := df.Get(c, rIdx)
 			if err != nil {
 				panic(err)
 			}
-			addToMatrix(r+rowOffset, c+colOffset, val.ToString())
+			addToMatrix(mIdx, c+colOffset, val.ToString())
 		}
+	}
+
+	// add data to matrix
+	mIdx := rowOffset
+	for r := 0; r < headerRows; r++ {
+		addRow(r, mIdx)
+		mIdx++
+	}
+
+	if hasDotRow {
+		if showIndexes {
+			addToMatrix(mIdx, 0, "")
+		}
+
+		for c := 0; c < nCols; c++ {
+			addToMatrix(mIdx, c+colOffset, "...")
+		}
+		mIdx++
+	}
+
+	for r := 0; r < tailRows; r++ {
+		addRow((totalRows-tailRows)+r, mIdx)
+		mIdx++
 	}
 
 	// add types to matrix
@@ -295,7 +335,7 @@ func (df *DataFrame) Print(
 	}
 
 	// build the text
-	str := fmt.Sprintf("[%dx%d] %v", nCols, nRows, class)
+	str := fmt.Sprintf("[%dx%d] %v", nCols, totalRows, class)
 	str = strings.TrimRight(str, " ")
 	for r := 0; r < nMatRows; r++ {
 		str += "\n"
