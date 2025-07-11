@@ -93,7 +93,7 @@ func (df *DataFrame) AddRow(row []any) error {
 	return nil
 }
 
-func (df *DataFrame) GetRow(rowIdx int) ([]elements.Element, error) {
+func (df *DataFrame) GetRow(rowIdx int) ([]elements.IElement, error) {
 	if rowIdx < 0 || rowIdx >= df.NumRows() {
 		return nil, fmt.Errorf(
 			"GetRow called with rowIdx: %v out or range %v - %v",
@@ -103,7 +103,7 @@ func (df *DataFrame) GetRow(rowIdx int) ([]elements.Element, error) {
 		)
 	}
 
-	row := make([]elements.Element, df.NumColumns())
+	row := make([]elements.IElement, df.NumColumns())
 	for c := 0; c < df.NumColumns(); c++ {
 		row[c] = df.columns[c].Elem(rowIdx)
 	}
@@ -133,7 +133,7 @@ func (df *DataFrame) GetColumn(columnIdx int) (*series.Series, error) {
 	return df.columns[columnIdx], nil
 }
 
-func (df *DataFrame) GetByName(columnName string, rowIdx int) (elements.Element, error) {
+func (df *DataFrame) GetByName(columnName string, rowIdx int) (elements.IElement, error) {
 	col, err := df.GetColumnByName(columnName)
 	if err != nil {
 		return nil, err
@@ -152,7 +152,7 @@ func (df *DataFrame) GetByName(columnName string, rowIdx int) (elements.Element,
 	return item, nil
 }
 
-func (df *DataFrame) Get(columnIdx int, rowIdx int) (elements.Element, error) {
+func (df *DataFrame) Get(columnIdx int, rowIdx int) (elements.IElement, error) {
 	col, err := df.GetColumn(columnIdx)
 	if err != nil {
 		return nil, err
@@ -363,7 +363,7 @@ func (df *DataFrame) Describe() *DataFrame {
 
 	columns := make([]*series.Series, nCols+1)
 
-	columns[0] = series.New("index", []string{
+	columns[0] = series.BuildSeries("index", []string{
 		"count",
 		"sum",
 		"mean",
@@ -386,7 +386,7 @@ func (df *DataFrame) Describe() *DataFrame {
 			col.Max(),
 		}
 
-		columns[c+1] = series.New(col.GetName(), values)
+		columns[c+1] = series.BuildSeries(col.GetName(), values)
 	}
 
 	return New(columns)

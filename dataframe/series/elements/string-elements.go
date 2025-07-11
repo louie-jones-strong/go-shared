@@ -19,6 +19,12 @@ func NewStringElement(val string) *StringElement {
 	}
 }
 
+func (e *StringElement) Clone() IElement {
+	return &StringElement{
+		e.BaseElement.Clone(),
+	}
+}
+
 func (e StringElement) Type() apptype.Type {
 	return apptype.String
 }
@@ -45,18 +51,18 @@ func (e StringElement) ToBool() (bool, error) {
 	return false, fmt.Errorf("can't convert String \"%v\" to bool", e.val)
 }
 
-func (e StringElement) Less(elem Element) bool {
+func (e StringElement) Less(elem IElement) bool {
 	return e.val < elem.ToString()
 }
 
-func (e StringElement) LessEq(elem Element) bool {
+func (e StringElement) LessEq(elem IElement) bool {
 	return e.val <= elem.ToString()
 }
 
-func (e StringElement) Greater(elem Element) bool {
+func (e StringElement) Greater(elem IElement) bool {
 	return e.val > elem.ToString()
 }
 
-func (e StringElement) GreaterEq(elem Element) bool {
+func (e StringElement) GreaterEq(elem IElement) bool {
 	return e.val >= elem.ToString()
 }

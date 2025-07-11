@@ -16,6 +16,12 @@ func NewIntElement(val int) *IntElement {
 	}
 }
 
+func (e *IntElement) Clone() IElement {
+	return &IntElement{
+		e.BaseElement.Clone(),
+	}
+}
+
 func (e IntElement) Type() apptype.Type {
 	return apptype.String
 }
@@ -37,7 +43,7 @@ func (e IntElement) ToBool() (bool, error) {
 	return false, fmt.Errorf("can't convert Float \"%v\" to bool", e.val)
 }
 
-func (e IntElement) Less(elem Element) bool {
+func (e IntElement) Less(elem IElement) bool {
 	f, err := elem.ToInt()
 	if err != nil {
 		return false
@@ -45,7 +51,7 @@ func (e IntElement) Less(elem Element) bool {
 	return e.val < f
 }
 
-func (e IntElement) LessEq(elem Element) bool {
+func (e IntElement) LessEq(elem IElement) bool {
 	f, err := elem.ToInt()
 	if err != nil {
 		return false
@@ -53,7 +59,7 @@ func (e IntElement) LessEq(elem Element) bool {
 	return e.val <= f
 }
 
-func (e IntElement) Greater(elem Element) bool {
+func (e IntElement) Greater(elem IElement) bool {
 	f, err := elem.ToInt()
 	if err != nil {
 		return false
@@ -61,7 +67,7 @@ func (e IntElement) Greater(elem Element) bool {
 	return e.val > f
 }
 
-func (e IntElement) GreaterEq(elem Element) bool {
+func (e IntElement) GreaterEq(elem IElement) bool {
 	f, err := elem.ToInt()
 	if err != nil {
 		return false

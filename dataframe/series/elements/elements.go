@@ -2,15 +2,17 @@ package elements
 
 import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
 
-type Element interface {
+type IElement interface {
+	Clone() IElement
+
 	Set(any)
 
-	Eq(Element) bool
-	Neq(Element) bool
-	Less(Element) bool
-	LessEq(Element) bool
-	Greater(Element) bool
-	GreaterEq(Element) bool
+	Eq(IElement) bool
+	Neq(IElement) bool
+	Less(IElement) bool
+	LessEq(IElement) bool
+	Greater(IElement) bool
+	GreaterEq(IElement) bool
 
 	Val() any
 
@@ -23,15 +25,20 @@ type Element interface {
 }
 
 type IElements interface {
-	Elem(int) Element
+	Clone() IElements
+	Elem(int) IElement
 	Len() int
 	Subset(indexes []int) IElements
 	Append(values ...any)
 }
 
-type Elements[T Element] []T
+type Elements[T IElement] []T
 
-func NewElements[V any, E Element](
+func NewElements[E IElement](items []E) Elements[E] {
+	return items
+}
+
+func BuildElements[V any, E IElement](
 	values []V,
 	elemBuilder func(V) E,
 ) Elements[E] {
@@ -43,8 +50,23 @@ func NewElements[V any, E Element](
 	return elements
 }
 
-func (e Elements[T]) Len() int           { return len(e) }
-func (e Elements[T]) Elem(i int) Element { return e[i] }
+func (e Elements[T]) Clone() IElements {
+	newElems := make([]T, len(e))
+	for i := 0; i < len(e); i++ {
+
+		cloned := e[i].Clone()
+		typedCloned, ok := cloned.(T)
+		if !ok {
+			panic("Clone() called on element but it returned wrong type")
+		}
+		newElems[i] = typedCloned
+	}
+
+	return NewElements(newElems)
+}
+
+func (e Elements[T]) Len() int            { return len(e) }
+func (e Elements[T]) Elem(i int) IElement { return e[i] }
 
 func (e Elements[T]) Subset(indexes []int) IElements {
 

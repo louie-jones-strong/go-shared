@@ -17,36 +17,50 @@ type Series struct {
 	elms elements.IElements
 }
 
-func New(
+func BuildSeries(
 	name string,
 	values any,
 ) *Series {
 
-	ret := &Series{
-		name: name,
-	}
-
 	switch vals := values.(type) {
 	case []string:
-		ret.elms = elements.NewElements(vals, elements.NewStringElement)
-		ret.t = apptype.String
+		elms := elements.BuildElements(vals, elements.NewStringElement)
+		return New(name, apptype.String, elms)
 	case []int:
-		ret.elms = elements.NewElements(vals, elements.NewIntElement)
-		ret.t = apptype.Int
+		elms := elements.BuildElements(vals, elements.NewIntElement)
+		return New(name, apptype.Int, elms)
 	case []float64:
-		ret.elms = elements.NewElements(vals, elements.NewFloatElement)
-		ret.t = apptype.Float
+		elms := elements.BuildElements(vals, elements.NewFloatElement)
+		return New(name, apptype.Float, elms)
 	case []bool:
-		ret.elms = elements.NewElements(vals, elements.NewBoolElement)
-		ret.t = apptype.Bool
+		elms := elements.BuildElements(vals, elements.NewBoolElement)
+		return New(name, apptype.Bool, elms)
 	case []time.Time:
-		ret.elms = elements.NewElements(vals, elements.NewDateTimeElement)
-		ret.t = apptype.DateTime
+		elms := elements.BuildElements(vals, elements.NewDateTimeElement)
+		return New(name, apptype.DateTime, elms)
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
+}
 
-	return ret
+func New(
+	name string,
+	t apptype.Type,
+	elms elements.IElements,
+) *Series {
+	return &Series{
+		name: name,
+		t:    t,
+		elms: elms,
+	}
+}
+
+func (s *Series) Clone() *Series {
+	return New(
+		s.name,
+		s.t,
+		s.elms.Clone(),
+	)
 }
 
 func (s *Series) Len() int {
@@ -61,7 +75,7 @@ func (s *Series) Val(i int) any {
 	return s.Elem(i).Val()
 }
 
-func (s *Series) Elem(i int) elements.Element {
+func (s *Series) Elem(i int) elements.IElement {
 	return s.elms.Elem(i)
 }
 
@@ -235,7 +249,7 @@ func (s Series) Order(reverse bool) []int {
 
 type indexedElement struct {
 	index   int
-	element elements.Element
+	element elements.IElement
 }
 
 type indexedElements []indexedElement

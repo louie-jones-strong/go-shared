@@ -108,7 +108,7 @@ func (s *DataFrameStorage) Load() (*DataFrame, error) {
 			return nil, err
 		}
 
-		cols[colIdx] = series.New(header, values)
+		cols[colIdx] = series.BuildSeries(header, values)
 	}
 
 	df := New(

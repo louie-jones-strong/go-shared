@@ -17,6 +17,12 @@ func NewFloatElement(val float64) *FloatElement {
 	}
 }
 
+func (e *FloatElement) Clone() IElement {
+	return &FloatElement{
+		e.BaseElement.Clone(),
+	}
+}
+
 func (e FloatElement) Type() apptype.Type {
 	return apptype.String
 }
@@ -39,7 +45,7 @@ func (e FloatElement) ToBool() (bool, error) {
 	return false, fmt.Errorf("can't convert Float \"%v\" to bool", e.val)
 }
 
-func (e FloatElement) Less(elem Element) bool {
+func (e FloatElement) Less(elem IElement) bool {
 	f := elem.ToFloat()
 	if math.IsNaN(f) {
 		return false
@@ -47,7 +53,7 @@ func (e FloatElement) Less(elem Element) bool {
 	return e.val < f
 }
 
-func (e FloatElement) LessEq(elem Element) bool {
+func (e FloatElement) LessEq(elem IElement) bool {
 	f := elem.ToFloat()
 	if math.IsNaN(f) {
 		return false
@@ -55,7 +61,7 @@ func (e FloatElement) LessEq(elem Element) bool {
 	return e.val <= f
 }
 
-func (e FloatElement) Greater(elem Element) bool {
+func (e FloatElement) Greater(elem IElement) bool {
 	f := elem.ToFloat()
 	if math.IsNaN(f) {
 		return false
@@ -63,7 +69,7 @@ func (e FloatElement) Greater(elem Element) bool {
 	return e.val > f
 }
 
-func (e FloatElement) GreaterEq(elem Element) bool {
+func (e FloatElement) GreaterEq(elem IElement) bool {
 	f := elem.ToFloat()
 	if math.IsNaN(f) {
 		return false

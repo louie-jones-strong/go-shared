@@ -50,7 +50,7 @@ func TestUnit_print(t *testing.T) {
 			name: "empty row",
 			df: New(
 				[]*series.Series{
-					series.New("name", []string{}),
+					series.BuildSeries("name", []string{}),
 				},
 			),
 			showHeader:    true,
@@ -67,9 +67,9 @@ func TestUnit_print(t *testing.T) {
 			name: "show all: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", []string{"Alice", "Bob"}),
-					series.New("age", []string{"20", "22"}),
-					series.New("grade", []string{"A", "B"}),
+					series.BuildSeries("name", []string{"Alice", "Bob"}),
+					series.BuildSeries("age", []string{"20", "22"}),
+					series.BuildSeries("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:    true,
@@ -88,9 +88,9 @@ func TestUnit_print(t *testing.T) {
 			name: "show only header: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", []string{"Alice", "Bob"}),
-					series.New("age", []string{"20", "22"}),
-					series.New("grade", []string{"A", "B"}),
+					series.BuildSeries("name", []string{"Alice", "Bob"}),
+					series.BuildSeries("age", []string{"20", "22"}),
+					series.BuildSeries("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:    true,
@@ -107,9 +107,9 @@ Bob   22  B`,
 			name: "show only index: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", []string{"Alice", "Bob"}),
-					series.New("age", []string{"20", "22"}),
-					series.New("grade", []string{"A", "B"}),
+					series.BuildSeries("name", []string{"Alice", "Bob"}),
+					series.BuildSeries("age", []string{"20", "22"}),
+					series.BuildSeries("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:    false,
@@ -125,9 +125,9 @@ Bob   22  B`,
 			name: "show only types: all strings",
 			df: New(
 				[]*series.Series{
-					series.New("name", []string{"Alice", "Bob"}),
-					series.New("age", []string{"20", "22"}),
-					series.New("grade", []string{"A", "B"}),
+					series.BuildSeries("name", []string{"Alice", "Bob"}),
+					series.BuildSeries("age", []string{"20", "22"}),
+					series.BuildSeries("grade", []string{"A", "B"}),
 				},
 			),
 			showHeader:    false,
@@ -144,7 +144,7 @@ Bob      22       B
 			name: "show all: 11 rows all strings",
 			df: New(
 				[]*series.Series{
-					series.New("test", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
+					series.BuildSeries("test", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
 				},
 			),
 			showHeader:    true,
@@ -171,7 +171,7 @@ Bob      22       B
 			name: "show all: 11 rows all ints",
 			df: New(
 				[]*series.Series{
-					series.New("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.BuildSeries("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
 				},
 			),
 			showHeader:    true,
@@ -198,10 +198,10 @@ Bob      22       B
 			name: "show all: 11 rows of all types",
 			df: New(
 				[]*series.Series{
-					series.New("A", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
-					series.New("B", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-					series.New("C", []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-					series.New("D", []bool{true, false, true, false, true, false, true, false, true, false, true}),
+					series.BuildSeries("A", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
+					series.BuildSeries("B", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.BuildSeries("C", []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.BuildSeries("D", []bool{true, false, true, false, true, false, true, false, true, false, true}),
 				},
 			),
 			showHeader:    true,
@@ -228,10 +228,10 @@ Bob      22       B
 			name: "show all: 11 rows of all types only 5 header 3 tails",
 			df: New(
 				[]*series.Series{
-					series.New("A", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
-					series.New("B", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-					series.New("C", []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-					series.New("D", []bool{true, false, true, false, true, false, true, false, true, false, true}),
+					series.BuildSeries("A", []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}),
+					series.BuildSeries("B", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.BuildSeries("C", []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.BuildSeries("D", []bool{true, false, true, false, true, false, true, false, true, false, true}),
 				},
 			),
 			showHeader:    true,
@@ -301,12 +301,12 @@ func TestUnit_Describe(t *testing.T) {
 			name: "1 int column",
 			df: New(
 				[]*series.Series{
-					series.New("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+					series.BuildSeries("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
 				},
 			),
 			expectedRes: New(
 				[]*series.Series{
-					series.New("index", []string{
+					series.BuildSeries("index", []string{
 						"count",
 						"sum",
 						"mean",
@@ -317,7 +317,7 @@ func TestUnit_Describe(t *testing.T) {
 						// "75%",
 						"max",
 					}),
-					series.New("test", []float64{
+					series.BuildSeries("test", []float64{
 						11,
 						66,
 						6,

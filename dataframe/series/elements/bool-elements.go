@@ -12,6 +12,12 @@ func NewBoolElement(val bool) *BoolElement {
 	}
 }
 
+func (e *BoolElement) Clone() IElement {
+	return &BoolElement{
+		e.BaseElement.Clone(),
+	}
+}
+
 func (e BoolElement) Type() apptype.Type {
 	return apptype.String
 }
@@ -34,7 +40,7 @@ func (e BoolElement) ToBool() (bool, error) {
 	return e.val, nil
 }
 
-func (e BoolElement) Less(elem Element) bool {
+func (e BoolElement) Less(elem IElement) bool {
 	b, err := elem.ToBool()
 	if err != nil {
 		return false
@@ -42,7 +48,7 @@ func (e BoolElement) Less(elem Element) bool {
 	return !e.val && b
 }
 
-func (e BoolElement) LessEq(elem Element) bool {
+func (e BoolElement) LessEq(elem IElement) bool {
 	b, err := elem.ToBool()
 	if err != nil {
 		return false
@@ -50,7 +56,7 @@ func (e BoolElement) LessEq(elem Element) bool {
 	return !e.val || b
 }
 
-func (e BoolElement) Greater(elem Element) bool {
+func (e BoolElement) Greater(elem IElement) bool {
 	b, err := elem.ToBool()
 	if err != nil {
 		return false
@@ -58,7 +64,7 @@ func (e BoolElement) Greater(elem Element) bool {
 	return e.val && !b
 }
 
-func (e BoolElement) GreaterEq(elem Element) bool {
+func (e BoolElement) GreaterEq(elem IElement) bool {
 	b, err := elem.ToBool()
 	if err != nil {
 		return false

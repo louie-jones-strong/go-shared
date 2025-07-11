@@ -16,28 +16,28 @@ func TestUnit_Order(t *testing.T) {
 	}{
 		{
 			name:        "empty",
-			s:           New("test", []int{}),
+			s:           BuildSeries("test", []int{}),
 			expectedRes: nil,
 		},
 		{
 			name:        "ordered: acceding",
-			s:           New("test", []int{1, 2, 3}),
+			s:           BuildSeries("test", []int{1, 2, 3}),
 			expectedRes: []int{0, 1, 2},
 		},
 		{
 			name:        "reverse ordered: acceding",
-			s:           New("test", []int{3, 2, 1}),
+			s:           BuildSeries("test", []int{3, 2, 1}),
 			expectedRes: []int{2, 1, 0},
 		},
 		{
 			name:        "ordered: descending",
-			s:           New("test", []int{1, 2, 3}),
+			s:           BuildSeries("test", []int{1, 2, 3}),
 			reverse:     true,
 			expectedRes: []int{2, 1, 0},
 		},
 		{
 			name:        "reverse ordered: descending",
-			s:           New("test", []int{3, 2, 1}),
+			s:           BuildSeries("test", []int{3, 2, 1}),
 			reverse:     true,
 			expectedRes: []int{0, 1, 2},
 		},

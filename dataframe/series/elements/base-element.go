@@ -17,6 +17,10 @@ func NewBaseElement[T supportedTypes](val T) BaseElement[T] {
 	return BaseElement[T]{val: val}
 }
 
+func (e BaseElement[T]) Clone() BaseElement[T] {
+	return NewBaseElement(e.val)
+}
+
 func (e BaseElement[T]) Val() any {
 	return e.val
 }
@@ -35,7 +39,7 @@ func (e BaseElement[T]) ToString() string {
 	return fmt.Sprintf("%v", e.val)
 }
 
-func (e BaseElement[T]) Eq(other Element) bool {
+func (e BaseElement[T]) Eq(other IElement) bool {
 	otherVal, ok := other.Val().(T)
 	if !ok {
 		return false
@@ -44,7 +48,7 @@ func (e BaseElement[T]) Eq(other Element) bool {
 	return e.val == otherVal
 }
 
-func (e BaseElement[T]) Neq(other Element) bool {
+func (e BaseElement[T]) Neq(other IElement) bool {
 	otherVal, ok := other.Val().(T)
 	if !ok {
 		return true

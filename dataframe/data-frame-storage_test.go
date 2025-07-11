@@ -15,11 +15,11 @@ func TestDataFrameStorage_CSV(t *testing.T) {
 	dateTime := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
 	expectedData := New(
 		[]*series.Series{
-			series.New("name", []string{"Alice", "Bob"}),
-			series.New("age", []int{20, 22}),
-			series.New("marks", []float64{100.1, 60}),
-			series.New("grade", []string{"A", "B"}),
-			series.New("date", []time.Time{dateTime, dateTime}),
+			series.BuildSeries("name", []string{"Alice", "Bob"}),
+			series.BuildSeries("age", []int{20, 22}),
+			series.BuildSeries("marks", []float64{100.1, 60}),
+			series.BuildSeries("grade", []string{"A", "B"}),
+			series.BuildSeries("date", []time.Time{dateTime, dateTime}),
 		},
 	)
 

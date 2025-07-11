@@ -17,6 +17,12 @@ func NewDateTimeElement(val time.Time) *DateTimeElement {
 	}
 }
 
+func (e DateTimeElement) Clone() IElement {
+	return &DateTimeElement{
+		e.BaseElement.Clone(),
+	}
+}
+
 func (e DateTimeElement) Type() apptype.Type {
 	return apptype.String
 }
@@ -37,7 +43,7 @@ func (e DateTimeElement) ToBool() (bool, error) {
 	return false, fmt.Errorf("can't convert datetime \"%v\" to bool", e.val)
 }
 
-func (e DateTimeElement) Less(elem Element) bool {
+func (e DateTimeElement) Less(elem IElement) bool {
 	dt, ok := elem.(*DateTimeElement)
 	if !ok {
 		return false
@@ -45,7 +51,7 @@ func (e DateTimeElement) Less(elem Element) bool {
 	return e.val.Before(dt.val)
 }
 
-func (e DateTimeElement) LessEq(elem Element) bool {
+func (e DateTimeElement) LessEq(elem IElement) bool {
 	dt, ok := elem.(*DateTimeElement)
 	if !ok {
 		return false
@@ -53,7 +59,7 @@ func (e DateTimeElement) LessEq(elem Element) bool {
 	return e.val.Before(dt.val) || e.val.Equal(dt.val)
 }
 
-func (e DateTimeElement) Greater(elem Element) bool {
+func (e DateTimeElement) Greater(elem IElement) bool {
 	dt, ok := elem.(*DateTimeElement)
 	if !ok {
 		return false
@@ -61,7 +67,7 @@ func (e DateTimeElement) Greater(elem Element) bool {
 	return e.val.After(dt.val)
 }
 
-func (e DateTimeElement) GreaterEq(elem Element) bool {
+func (e DateTimeElement) GreaterEq(elem IElement) bool {
 	dt, ok := elem.(*DateTimeElement)
 	if !ok {
 		return false
