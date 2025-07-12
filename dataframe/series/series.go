@@ -63,6 +63,10 @@ func (s *Series) Clone() *Series {
 	)
 }
 
+func (s *Series) Rename(newName string) {
+	s.name = newName
+}
+
 func (s *Series) Len() int {
 	return s.elms.Len()
 }

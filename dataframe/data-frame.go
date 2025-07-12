@@ -67,6 +67,11 @@ func (df *DataFrame) AddColumn(column *series.Series) error {
 	}
 
 	colName := column.GetName()
+	_, found := df.nameMap[colName]
+	if found {
+		return fmt.Errorf("Add Column called with column name that already exists: \"%v\"", colName)
+	}
+
 	df.nameMap[colName] = len(df.columns)
 	df.columns = append(df.columns, column)
 	return nil
