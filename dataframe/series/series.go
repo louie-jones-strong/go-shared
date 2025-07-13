@@ -13,44 +13,30 @@ import (
 
 type Series struct {
 	name string
-	t    apptype.Type
 	elms elements.IElements
 }
 
-func BuildSeries(
-	name string,
-	values any,
-) *Series {
+func BuildSeries(name string, values any) *Series {
 
 	switch vals := values.(type) {
 	case []string:
-		elms := elements.BuildElements(vals, elements.NewStringElement)
-		return New(name, apptype.String, elms)
+		return New(name, elements.BuildElements(vals, elements.NewStringElement))
 	case []int:
-		elms := elements.BuildElements(vals, elements.NewIntElement)
-		return New(name, apptype.Int, elms)
+		return New(name, elements.BuildElements(vals, elements.NewIntElement))
 	case []float64:
-		elms := elements.BuildElements(vals, elements.NewFloatElement)
-		return New(name, apptype.Float, elms)
+		return New(name, elements.BuildElements(vals, elements.NewFloatElement))
 	case []bool:
-		elms := elements.BuildElements(vals, elements.NewBoolElement)
-		return New(name, apptype.Bool, elms)
+		return New(name, elements.BuildElements(vals, elements.NewBoolElement))
 	case []time.Time:
-		elms := elements.BuildElements(vals, elements.NewDateTimeElement)
-		return New(name, apptype.DateTime, elms)
+		return New(name, elements.BuildElements(vals, elements.NewDateTimeElement))
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
 }
 
-func New(
-	name string,
-	t apptype.Type,
-	elms elements.IElements,
-) *Series {
+func New(name string, elms elements.IElements) *Series {
 	return &Series{
 		name: name,
-		t:    t,
 		elms: elms,
 	}
 }
@@ -58,9 +44,25 @@ func New(
 func (s *Series) Clone() *Series {
 	return New(
 		s.name,
-		s.t,
 		s.elms.Clone(),
 	)
+}
+
+func (s *Series) GetType() apptype.Type {
+	switch s.elms.(type) {
+	case elements.Elements[*elements.StringElement]:
+		return apptype.String
+	case elements.Elements[*elements.IntElement]:
+		return apptype.Int
+	case elements.Elements[*elements.FloatElement]:
+		return apptype.Float
+	case elements.Elements[*elements.BoolElement]:
+		return apptype.Bool
+	case elements.Elements[*elements.DateTimeElement]:
+		return apptype.DateTime
+	default:
+		return apptype.None
+	}
 }
 
 func (s *Series) Rename(newName string) {
@@ -85,10 +87,6 @@ func (s *Series) Elem(i int) elements.IElement {
 
 func (s *Series) GetName() string {
 	return s.name
-}
-
-func (s *Series) GetType() apptype.Type {
-	return s.t
 }
 
 func (s Series) Values() []any {
@@ -256,7 +254,6 @@ func (s Series) Subset(indexes Indexes) Series {
 
 	return Series{
 		name: s.name,
-		t:    s.t,
 		elms: s.elms.Subset(idx),
 	}
 }

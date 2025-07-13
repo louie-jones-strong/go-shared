@@ -9,6 +9,7 @@ import (
 type Type string
 
 const (
+	None     Type = ""
 	String   Type = "string"
 	Int      Type = "int"
 	Float    Type = "float"

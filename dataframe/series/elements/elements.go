@@ -1,38 +1,5 @@
 package elements
 
-import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
-
-type IElement interface {
-	Clone() IElement
-
-	Set(any)
-
-	Eq(IElement) bool
-	Neq(IElement) bool
-	Less(IElement) bool
-	LessEq(IElement) bool
-	Greater(IElement) bool
-	GreaterEq(IElement) bool
-
-	Val() any
-
-	Type() apptype.Type
-
-	ToString() string
-	ToInt() (int, error)
-	ToFloat() float64
-	ToBool() (bool, error)
-}
-
-type IElements interface {
-	AllElems() []IElement
-	Clone() IElements
-	Elem(int) IElement
-	Len() int
-	Subset(indexes []int) IElements
-	Append(values ...any)
-}
-
 type Elements[T IElement] []T
 
 func NewElements[E IElement](items []E) Elements[E] {
@@ -74,11 +41,15 @@ func (e Elements[T]) Clone() IElements {
 	return NewElements(newElems)
 }
 
-func (e Elements[T]) Len() int            { return len(e) }
-func (e Elements[T]) Elem(i int) IElement { return e[i] }
+func (e Elements[T]) Len() int {
+	return len(e)
+}
+
+func (e Elements[T]) Elem(i int) IElement {
+	return e[i]
+}
 
 func (e Elements[T]) Subset(indexes []int) IElements {
-
 	ret := make(Elements[T], len(indexes))
 	for k, i := range indexes {
 		ret[k] = e[i]
