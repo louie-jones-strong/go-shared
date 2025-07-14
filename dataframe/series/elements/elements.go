@@ -1,5 +1,7 @@
 package elements
 
+import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
+
 type Elements[T IElement] []T
 
 func NewElements[E IElement](items []E) Elements[E] {
@@ -16,6 +18,27 @@ func BuildElements[V any, E IElement](
 	}
 
 	return elements
+}
+
+func (e Elements[T]) GetType() apptype.Type {
+	return getType(e)
+}
+
+func getType(e IElements) apptype.Type {
+	switch e.(type) {
+	case Elements[*StringElement]:
+		return apptype.String
+	case Elements[*IntElement]:
+		return apptype.Int
+	case Elements[*FloatElement]:
+		return apptype.Float
+	case Elements[*BoolElement]:
+		return apptype.Bool
+	case Elements[*DateTimeElement]:
+		return apptype.DateTime
+	default:
+		return apptype.None
+	}
 }
 
 func (e Elements[T]) AllElems() []IElement {

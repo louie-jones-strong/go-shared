@@ -49,20 +49,7 @@ func (s *Series) Clone() *Series {
 }
 
 func (s *Series) GetType() apptype.Type {
-	switch s.elms.(type) {
-	case elements.Elements[*elements.StringElement]:
-		return apptype.String
-	case elements.Elements[*elements.IntElement]:
-		return apptype.Int
-	case elements.Elements[*elements.FloatElement]:
-		return apptype.Float
-	case elements.Elements[*elements.BoolElement]:
-		return apptype.Bool
-	case elements.Elements[*elements.DateTimeElement]:
-		return apptype.DateTime
-	default:
-		return apptype.None
-	}
+	return s.elms.GetType()
 }
 
 func (s *Series) Rename(newName string) {
@@ -97,27 +84,6 @@ func (s Series) Values() []any {
 	return ret
 }
 
-func (s Series) ToStrings() ([]string, error) {
-	ret := make([]string, s.Len())
-	for i := 0; i < s.Len(); i++ {
-		ret[i] = s.elms.Elem(i).ToString()
-	}
-	return ret, nil
-}
-
-func (s Series) ToInts() ([]int, error) {
-	ret := make([]int, s.Len())
-	for i := 0; i < s.Len(); i++ {
-		val, err := s.elms.Elem(i).ToInt()
-		if err != nil {
-			return nil, err
-		}
-		ret[i] = val
-
-	}
-	return ret, nil
-}
-
 func (s Series) ToFloats() []float64 {
 	ret := make([]float64, s.Len())
 	for i := 0; i < s.Len(); i++ {
@@ -125,19 +91,6 @@ func (s Series) ToFloats() []float64 {
 		ret[i] = e.ToFloat()
 	}
 	return ret
-}
-
-func (s Series) ToBools() ([]bool, error) {
-	ret := make([]bool, s.Len())
-	for i := 0; i < s.Len(); i++ {
-		val, err := s.elms.Elem(i).ToBool()
-		if err != nil {
-			return nil, err
-		}
-		ret[i] = val
-
-	}
-	return ret, nil
 }
 
 func (s Series) Sum() float64 {

@@ -2,6 +2,16 @@ package elements
 
 import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
 
+type IElements interface {
+	GetType() apptype.Type
+	AllElems() []IElement
+	Clone() IElements
+	Elem(int) IElement
+	Len() int
+	Subset(indexes []int) IElements
+	Append(values ...any)
+}
+
 type IElement interface {
 	Clone() IElement
 
@@ -22,13 +32,4 @@ type IElement interface {
 	ToInt() (int, error)
 	ToFloat() float64
 	ToBool() (bool, error)
-}
-
-type IElements interface {
-	AllElems() []IElement
-	Clone() IElements
-	Elem(int) IElement
-	Len() int
-	Subset(indexes []int) IElements
-	Append(values ...any)
 }
