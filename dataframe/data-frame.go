@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
-	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
 )
 
 type DataFrame struct {
@@ -98,7 +98,7 @@ func (df *DataFrame) AddRow(row []any) error {
 	return nil
 }
 
-func (df *DataFrame) GetRow(rowIdx int) ([]elements.IElement, error) {
+func (df *DataFrame) GetRow(rowIdx int) ([]element.IElement, error) {
 	if rowIdx < 0 || rowIdx >= df.NumRows() {
 		return nil, fmt.Errorf(
 			"GetRow called with rowIdx: %v out or range %v - %v",
@@ -108,7 +108,7 @@ func (df *DataFrame) GetRow(rowIdx int) ([]elements.IElement, error) {
 		)
 	}
 
-	row := make([]elements.IElement, df.NumColumns())
+	row := make([]element.IElement, df.NumColumns())
 	for c := 0; c < df.NumColumns(); c++ {
 		row[c] = df.columns[c].Elem(rowIdx)
 	}
@@ -138,7 +138,7 @@ func (df *DataFrame) GetColumn(columnIdx int) (*series.Series, error) {
 	return df.columns[columnIdx], nil
 }
 
-func (df *DataFrame) GetByName(columnName string, rowIdx int) (elements.IElement, error) {
+func (df *DataFrame) GetByName(columnName string, rowIdx int) (element.IElement, error) {
 	col, err := df.GetColumnByName(columnName)
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ func (df *DataFrame) GetByName(columnName string, rowIdx int) (elements.IElement
 	return item, nil
 }
 
-func (df *DataFrame) Get(columnIdx int, rowIdx int) (elements.IElement, error) {
+func (df *DataFrame) Get(columnIdx int, rowIdx int) (element.IElement, error) {
 	col, err := df.GetColumn(columnIdx)
 	if err != nil {
 		return nil, err

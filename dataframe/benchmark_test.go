@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/series"
-	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,8 +58,8 @@ func Benchmark(b *testing.B) {
    <string> <float>         <float>         <float>         <float>            <float>          <float>`
 		assert.Equal(b, expectedStr, str)
 
-		delegate := func(item elements.IElement) (elements.IElement, error) {
-			newElem := elements.NewFloatElement(item.ToFloat() * 10)
+		delegate := func(item element.IElement) (element.IElement, error) {
+			newElem := element.NewFloatElement(item.ToFloat() * 10)
 			return newElem, nil
 		}
 		col1Clone.ApplyInPlace(delegate)

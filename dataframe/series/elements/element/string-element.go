@@ -1,4 +1,4 @@
-package elements
+package element
 
 import (
 	"fmt"

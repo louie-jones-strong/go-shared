@@ -1,4 +1,4 @@
-package elements
+package element
 
 import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
 	"gonum.org/v1/gonum/stat"
 )
 
@@ -20,15 +21,15 @@ func BuildSeries(name string, values any) *Series {
 
 	switch vals := values.(type) {
 	case []string:
-		return New(name, elements.BuildElements(vals, elements.NewStringElement))
+		return New(name, elements.BuildElements(vals, element.NewStringElement))
 	case []int:
-		return New(name, elements.BuildElements(vals, elements.NewIntElement))
+		return New(name, elements.BuildElements(vals, element.NewIntElement))
 	case []float64:
-		return New(name, elements.BuildElements(vals, elements.NewFloatElement))
+		return New(name, elements.BuildElements(vals, element.NewFloatElement))
 	case []bool:
-		return New(name, elements.BuildElements(vals, elements.NewBoolElement))
+		return New(name, elements.BuildElements(vals, element.NewBoolElement))
 	case []time.Time:
-		return New(name, elements.BuildElements(vals, elements.NewDateTimeElement))
+		return New(name, elements.BuildElements(vals, element.NewDateTimeElement))
 	default:
 		panic(fmt.Sprintf("unknown type %v", values))
 	}
@@ -68,7 +69,7 @@ func (s *Series) Val(i int) any {
 	return s.Elem(i).Val()
 }
 
-func (s *Series) Elem(i int) elements.IElement {
+func (s *Series) Elem(i int) element.IElement {
 	return s.elms.Elem(i)
 }
 
@@ -143,9 +144,9 @@ func (s Series) Max() float64 {
 	return maximum
 }
 
-type applyFunc[In elements.IElement, Out elements.IElement] func(item In) (Out, error)
+type applyFunc[In element.IElement, Out element.IElement] func(item In) (Out, error)
 
-func Apply[In elements.IElement, Out elements.IElement](
+func Apply[In element.IElement, Out element.IElement](
 	elems elements.Elements[In],
 	delegate applyFunc[In, Out],
 ) (elements.Elements[Out], error) {
@@ -164,7 +165,7 @@ func Apply[In elements.IElement, Out elements.IElement](
 	return newElements, nil
 }
 
-func (s *Series) ApplyInPlace(delegate applyFunc[elements.IElement, elements.IElement]) {
+func (s *Series) ApplyInPlace(delegate applyFunc[element.IElement, element.IElement]) {
 	newElms, err := Apply(s.elms.AllElems(), delegate)
 	if err != nil {
 		panic(err)
@@ -233,7 +234,7 @@ func (s Series) Order(reverse bool) []int {
 
 type indexedElement struct {
 	index   int
-	element elements.IElement
+	element element.IElement
 }
 
 type indexedElements []indexedElement

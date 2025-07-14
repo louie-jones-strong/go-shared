@@ -1,14 +1,17 @@
 package elements
 
-import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
+import (
+	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
+	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
+)
 
-type Elements[T IElement] []T
+type Elements[T element.IElement] []T
 
-func NewElements[E IElement](items []E) Elements[E] {
+func NewElements[E element.IElement](items []E) Elements[E] {
 	return items
 }
 
-func BuildElements[V any, E IElement](
+func BuildElements[V any, E element.IElement](
 	values []V,
 	elemBuilder func(V) E,
 ) Elements[E] {
@@ -26,23 +29,23 @@ func (e Elements[T]) GetType() apptype.Type {
 
 func getType(e IElements) apptype.Type {
 	switch e.(type) {
-	case Elements[*StringElement]:
+	case Elements[*element.StringElement]:
 		return apptype.String
-	case Elements[*IntElement]:
+	case Elements[*element.IntElement]:
 		return apptype.Int
-	case Elements[*FloatElement]:
+	case Elements[*element.FloatElement]:
 		return apptype.Float
-	case Elements[*BoolElement]:
+	case Elements[*element.BoolElement]:
 		return apptype.Bool
-	case Elements[*DateTimeElement]:
+	case Elements[*element.DateTimeElement]:
 		return apptype.DateTime
 	default:
 		return apptype.None
 	}
 }
 
-func (e Elements[T]) AllElems() []IElement {
-	ret := make([]IElement, len(e))
+func (e Elements[T]) AllElems() []element.IElement {
+	ret := make([]element.IElement, len(e))
 	for i := 0; i < len(e); i++ {
 		ret[i] = e[i]
 	}
@@ -68,7 +71,7 @@ func (e Elements[T]) Len() int {
 	return len(e)
 }
 
-func (e Elements[T]) Elem(i int) IElement {
+func (e Elements[T]) Elem(i int) element.IElement {
 	return e[i]
 }
 
