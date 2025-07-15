@@ -11,6 +11,9 @@ type FloatElement struct {
 	BaseElement[float64]
 }
 
+func NewFloatElementFromInt(val int) *FloatElement {
+	return NewFloatElement(float64(val))
+}
 func NewFloatElement(val float64) *FloatElement {
 	return &FloatElement{
 		NewBaseElement(val),
@@ -25,10 +28,6 @@ func (e *FloatElement) Clone() IElement {
 
 func (e FloatElement) Type() apptype.Type {
 	return apptype.String
-}
-
-func (e FloatElement) ToInt() (int, error) {
-	return int(e.val), nil
 }
 
 func (e FloatElement) ToFloat() float64 {

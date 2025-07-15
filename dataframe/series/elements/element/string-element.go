@@ -29,10 +29,6 @@ func (e StringElement) Type() apptype.Type {
 	return apptype.String
 }
 
-func (e StringElement) ToInt() (int, error) {
-	return strconv.Atoi(e.val)
-}
-
 func (e StringElement) ToFloat() float64 {
 	f, err := strconv.ParseFloat(e.val, 64)
 	if err != nil {

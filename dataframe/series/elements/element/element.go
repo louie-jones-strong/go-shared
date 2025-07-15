@@ -19,7 +19,6 @@ type IElement interface {
 	Type() apptype.Type
 
 	ToString() string
-	ToInt() (int, error)
 	ToFloat() float64
 	ToBool() (bool, error)
 }

@@ -23,7 +23,7 @@ func BuildSeries(name string, values any) *Series {
 	case []string:
 		return New(name, elements.BuildElements(vals, element.NewStringElement))
 	case []int:
-		return New(name, elements.BuildElements(vals, element.NewIntElement))
+		return New(name, elements.BuildElements(vals, element.NewFloatElementFromInt))
 	case []float64:
 		return New(name, elements.BuildElements(vals, element.NewFloatElement))
 	case []bool:

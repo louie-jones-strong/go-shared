@@ -22,13 +22,6 @@ func (e BoolElement) Type() apptype.Type {
 	return apptype.String
 }
 
-func (e BoolElement) ToInt() (int, error) {
-	if e.val {
-		return 1, nil
-	}
-	return 0, nil
-}
-
 func (e BoolElement) ToFloat() float64 {
 	if e.val {
 		return 1.0

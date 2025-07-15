@@ -31,8 +31,6 @@ func getType(e IElements) apptype.Type {
 	switch e.(type) {
 	case Elements[*element.StringElement]:
 		return apptype.String
-	case Elements[*element.IntElement]:
-		return apptype.Int
 	case Elements[*element.FloatElement]:
 		return apptype.Float
 	case Elements[*element.BoolElement]:

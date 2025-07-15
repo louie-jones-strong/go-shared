@@ -31,10 +31,6 @@ func (e DateTimeElement) ToString() string {
 	return e.val.Format(time.RFC3339)
 }
 
-func (e DateTimeElement) ToInt() (int, error) {
-	return int(e.val.Unix()), nil
-}
-
 func (e DateTimeElement) ToFloat() float64 {
 	return float64(e.val.Unix())
 }

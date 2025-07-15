@@ -168,33 +168,6 @@ Bob      22       B
     <string>`,
 		},
 		{
-			name: "show all: 11 rows all ints",
-			df: New(
-				[]*series.Series{
-					series.BuildSeries("test", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
-				},
-			),
-			showHeader:    true,
-			showTypes:     true,
-			showIndexes:   true,
-			numHeaderRows: 100,
-			numTailRows:   100,
-			expectedRes: `[1x11]
-    test
- 0: 1
- 1: 2
- 2: 3
- 3: 4
- 4: 5
- 5: 6
- 6: 7
- 7: 8
- 8: 9
- 9: 10
-10: 11
-    <int>`,
-		},
-		{
 			name: "show all: 11 rows of all types",
 			df: New(
 				[]*series.Series{
@@ -210,19 +183,19 @@ Bob      22       B
 			numHeaderRows: 100,
 			numTailRows:   100,
 			expectedRes: `[4x11]
-    A        B     C       D
- 0: 1        1     1       true
- 1: 2        2     2       false
- 2: 3        3     3       true
- 3: 4        4     4       false
- 4: 5        5     5       true
- 5: 6        6     6       false
- 6: 7        7     7       true
- 7: 8        8     8       false
- 8: 9        9     9       true
- 9: 10       10    10      false
-10: 11       11    11      true
-    <string> <int> <float> <bool>`,
+    A        B       C       D
+ 0: 1        1       1       true
+ 1: 2        2       2       false
+ 2: 3        3       3       true
+ 3: 4        4       4       false
+ 4: 5        5       5       true
+ 5: 6        6       6       false
+ 6: 7        7       7       true
+ 7: 8        8       8       false
+ 8: 9        9       9       true
+ 9: 10       10      10      false
+10: 11       11      11      true
+    <string> <float> <float> <bool>`,
 		},
 		{
 			name: "show all: 11 rows of all types only 5 header 3 tails",
@@ -240,17 +213,17 @@ Bob      22       B
 			numHeaderRows: 5,
 			numTailRows:   3,
 			expectedRes: `[4x11]
-    A        B     C       D
- 0: 1        1     1       true
- 1: 2        2     2       false
- 2: 3        3     3       true
- 3: 4        4     4       false
- 4: 5        5     5       true
-    ...      ...   ...     ...
- 8: 9        9     9       true
- 9: 10       10    10      false
-10: 11       11    11      true
-    <string> <int> <float> <bool>`,
+    A        B       C       D
+ 0: 1        1       1       true
+ 1: 2        2       2       false
+ 2: 3        3       3       true
+ 3: 4        4       4       false
+ 4: 5        5       5       true
+    ...      ...     ...     ...
+ 8: 9        9       9       true
+ 9: 10       10      10      false
+10: 11       11      11      true
+    <string> <float> <float> <bool>`,
 		},
 	}
 
