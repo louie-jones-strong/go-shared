@@ -1,10 +1,8 @@
 package element
 
 import (
-	"fmt"
 	"math"
 	"strconv"
-	"strings"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
 )
@@ -35,16 +33,6 @@ func (e StringElement) ToFloat() float64 {
 		return math.NaN()
 	}
 	return f
-}
-
-func (e StringElement) ToBool() (bool, error) {
-	switch strings.ToLower(e.val) {
-	case "true", "t", "1":
-		return true, nil
-	case "false", "f", "0":
-		return false, nil
-	}
-	return false, fmt.Errorf("can't convert String \"%v\" to bool", e.val)
 }
 
 func (e StringElement) Less(elem IElement) bool {

@@ -29,38 +29,34 @@ func (e BoolElement) ToFloat() float64 {
 	return 0.0
 }
 
-func (e BoolElement) ToBool() (bool, error) {
-	return e.val, nil
-}
-
 func (e BoolElement) Less(elem IElement) bool {
-	b, err := elem.ToBool()
-	if err != nil {
+	b, ok := elem.(*BoolElement)
+	if !ok {
 		return false
 	}
-	return !e.val && b
+	return !e.val && b.val
 }
 
 func (e BoolElement) LessEq(elem IElement) bool {
-	b, err := elem.ToBool()
-	if err != nil {
+	b, ok := elem.(*BoolElement)
+	if !ok {
 		return false
 	}
-	return !e.val || b
+	return !e.val || b.val
 }
 
 func (e BoolElement) Greater(elem IElement) bool {
-	b, err := elem.ToBool()
-	if err != nil {
+	b, ok := elem.(*BoolElement)
+	if !ok {
 		return false
 	}
-	return e.val && !b
+	return e.val && !b.val
 }
 
 func (e BoolElement) GreaterEq(elem IElement) bool {
-	b, err := elem.ToBool()
-	if err != nil {
+	b, ok := elem.(*BoolElement)
+	if !ok {
 		return false
 	}
-	return e.val || !b
+	return e.val || !b.val
 }

@@ -1,7 +1,6 @@
 package element
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
@@ -33,10 +32,6 @@ func (e DateTimeElement) ToString() string {
 
 func (e DateTimeElement) ToFloat() float64 {
 	return float64(e.val.Unix())
-}
-
-func (e DateTimeElement) ToBool() (bool, error) {
-	return false, fmt.Errorf("can't convert datetime \"%v\" to bool", e.val)
 }
 
 func (e DateTimeElement) Less(elem IElement) bool {

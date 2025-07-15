@@ -1,7 +1,6 @@
 package element
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
@@ -32,16 +31,6 @@ func (e FloatElement) Type() apptype.Type {
 
 func (e FloatElement) ToFloat() float64 {
 	return e.val
-}
-
-func (e FloatElement) ToBool() (bool, error) {
-	switch e.val {
-	case 1:
-		return true, nil
-	case 0:
-		return false, nil
-	}
-	return false, fmt.Errorf("can't convert Float \"%v\" to bool", e.val)
 }
 
 func (e FloatElement) Less(elem IElement) bool {

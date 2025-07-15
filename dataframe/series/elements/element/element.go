@@ -20,5 +20,4 @@ type IElement interface {
 
 	ToString() string
 	ToFloat() float64
-	ToBool() (bool, error)
 }
