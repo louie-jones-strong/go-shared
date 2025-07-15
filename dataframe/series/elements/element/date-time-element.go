@@ -23,7 +23,7 @@ func (e DateTimeElement) Clone() IElement {
 }
 
 func (e DateTimeElement) Type() apptype.Type {
-	return apptype.String
+	return apptype.DateTime
 }
 
 func (e DateTimeElement) ToString() string {
