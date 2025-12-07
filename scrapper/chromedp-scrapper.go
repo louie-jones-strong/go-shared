@@ -2,10 +2,10 @@ package scrapper
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/chromedp/chromedp"
+	"github.com/louie-jones-strong/go-shared/logger"
 )
 
 type ChromedpScrapper struct {
@@ -59,7 +59,7 @@ func (s *ChromedpScrapper) ScrapURL(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Printf("Scraping URL: %v Took: %v", url, time.Since(start))
+	logger.Debug("Scraping URL: %v Took: %v", url, time.Since(start))
 
 	return []byte(htmlSource), nil
 }

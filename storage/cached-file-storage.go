@@ -1,9 +1,10 @@
 package storage
 
 import (
-	"log"
 	"os"
 	"time"
+
+	"github.com/louie-jones-strong/go-shared/logger"
 )
 
 type CachedFileStorage[M any] struct {
@@ -40,10 +41,10 @@ func (s *CachedFileStorage[M]) Load() (M, error) {
 	}
 
 	if s.lastModTime != nil && modTime.Equal(*s.lastModTime) {
-		log.Printf("Cache HIT for: %v", s.filePath)
+		logger.Debug("Cache HIT for: %v", s.filePath)
 		return s.cachedContent, nil
 	}
-	log.Printf("Cache MISS for: %v", s.filePath)
+	logger.Debug("Cache MISS for: %v", s.filePath)
 
 	output, err := s.subStore.Load()
 	if err != nil {

@@ -2,12 +2,12 @@ package filecache
 
 import (
 	"errors"
-	"log"
 	"maps"
 	"os"
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/filecache/fileinfo"
+	"github.com/louie-jones-strong/go-shared/logger"
 	"github.com/louie-jones-strong/go-shared/storage"
 
 	"github.com/google/uuid"
@@ -114,7 +114,7 @@ func (fc *FileCache[K]) getManifest() map[K]fileinfo.FileInfo {
 	if fc.manifest == nil {
 		manifest, err := fc.manifestStore.Load()
 		if err != nil {
-			log.Println("error loading manifest store")
+			logger.Debug("error loading manifest store")
 		}
 
 		if manifest == nil {

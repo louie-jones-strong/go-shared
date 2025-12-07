@@ -3,9 +3,11 @@ package scrapper
 import (
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/louie-jones-strong/go-shared/logger"
 )
 
 type HTTPRequestScrapper struct {
@@ -30,11 +32,11 @@ func (s *HTTPRequestScrapper) ScrapURL(url string) ([]byte, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 300 {
-		log.Printf("failed response: %v", res)
+		logger.Debug("failed response: %v", res)
 		return nil, fmt.Errorf("Scraping URL: %v returned code: %v", url, res.StatusCode)
 	}
 
-	log.Printf("Scraping URL: %v Took: %v", url, time.Since(start))
+	slog.Debug("Scraping URL: %v Took: %v", url, time.Since(start))
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {

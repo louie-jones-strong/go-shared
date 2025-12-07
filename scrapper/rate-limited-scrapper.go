@@ -1,9 +1,10 @@
 package scrapper
 
 import (
-	"log"
 	"net/url"
 	"time"
+
+	"github.com/louie-jones-strong/go-shared/logger"
 )
 
 type RateLimitedScrapper struct {
@@ -41,7 +42,7 @@ func (s *RateLimitedScrapper) ScrapURL(urlToScrap string) ([]byte, error) {
 		if timeSinceLast < s.minTimeBetweenRequests {
 			waitDuration := s.minTimeBetweenRequests - timeSinceLast
 
-			log.Printf("Delaying request by %v", waitDuration)
+			logger.Debug("Delaying request by %v", waitDuration)
 			time.Sleep(waitDuration)
 		}
 	}
