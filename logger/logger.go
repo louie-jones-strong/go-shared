@@ -72,11 +72,7 @@ func ErrorWithArgs(msg string, args ...any) {
 	slog.Error(msg, args...)
 }
 
-func Fatal(format string, args ...any) {
-	FatalWithArgs(fmt.Sprintf(format, args...))
-}
-
-func FatalWithArgs(msg string, args ...any) {
-	slog.Error(msg, args...)
+func Fatal(err error, args ...any) {
+	slog.Error(fmt.Sprintf("Fatal Error: %v", err), args...)
 	os.Exit(1)
 }
