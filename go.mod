@@ -1,6 +1,8 @@
 module github.com/louie-jones-strong/go-shared
 
-go 1.23.0
+go 1.24.0
+
+toolchain go1.24.11
 
 require (
 	github.com/chromedp/chromedp v0.13.7
@@ -18,6 +20,7 @@ require (
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
+	golang.org/x/exp v0.0.0-20251209150349-8475f28825e9 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	gonum.org/v1/gonum v0.16.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
