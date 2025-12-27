@@ -4,6 +4,7 @@ import (
 	"errors"
 	"maps"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/filecache/fileinfo"
@@ -18,6 +19,7 @@ type FileCache[K comparable] struct {
 	itemFolderPath string
 
 	manifest map[K]*fileinfo.FileInfo
+	mu       sync.RWMutex
 }
 
 func New[K comparable](
@@ -39,6 +41,9 @@ func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, 
 	if manifest == nil {
 		return 0, nil
 	}
+
+	fc.mu.Lock()
+	defer fc.mu.Unlock()
 
 	defer fc.saveManifest()
 
@@ -69,6 +74,9 @@ func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, 
 }
 
 func (fc *FileCache[K]) TryLoadFileWithExpire(key K, expireDuration time.Duration) ([]byte, error) {
+
+	fc.mu.RLock()
+	defer fc.mu.RUnlock()
 	fi := fc.tryGetFileInfoWithExpire(key, expireDuration)
 	if fi == nil {
 		return nil, nil
@@ -89,6 +97,9 @@ func (fc *FileCache[K]) TryLoadFile(key K) ([]byte, error) {
 }
 
 func (fc *FileCache[K]) SaveFileWithExt(key K, data []byte, ext string) error {
+
+	fc.mu.Lock()
+	defer fc.mu.Unlock()
 
 	fi := fc.getOrCreateFileInfo(key, ext)
 
