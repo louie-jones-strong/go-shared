@@ -2,10 +2,12 @@ package storage
 
 import (
 	"encoding/json"
+	"sync"
 )
 
 type JSONStorage[M any] struct {
 	filePath string
+	mu       sync.RWMutex
 }
 
 func NewJSONStorage[M any](filePath string) *JSONStorage[M] {
@@ -16,7 +18,8 @@ func NewJSONStorage[M any](filePath string) *JSONStorage[M] {
 }
 
 func (s *JSONStorage[M]) Save(obj M) error {
-
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	// Marshal the object to JSON
 	data, err := json.MarshalIndent(obj, "", "  ")
 	if err != nil {
@@ -39,7 +42,8 @@ func (s *JSONStorage[M]) Save(obj M) error {
 
 func (s *JSONStorage[M]) Load() (M, error) {
 	var output M
-
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	file, err := OpenFileForReading(s.filePath)
 	if err != nil {
 		return output, err
