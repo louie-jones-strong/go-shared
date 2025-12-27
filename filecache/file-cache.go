@@ -14,10 +14,10 @@ import (
 )
 
 type FileCache[K comparable] struct {
-	manifestStore  storage.Storage[map[K]fileinfo.FileInfo]
+	manifestStore  storage.Storage[map[K]*fileinfo.FileInfo]
 	itemFolderPath string
 
-	manifest map[K]fileinfo.FileInfo
+	manifest map[K]*fileinfo.FileInfo
 }
 
 func New[K comparable](
@@ -25,7 +25,7 @@ func New[K comparable](
 	itemFolderPath string,
 ) *FileCache[K] {
 	return &FileCache[K]{
-		manifestStore: storage.NewJSONStorage[map[K]fileinfo.FileInfo](
+		manifestStore: storage.NewJSONStorage[map[K]*fileinfo.FileInfo](
 			manifestPath,
 		),
 		itemFolderPath: itemFolderPath,
@@ -110,7 +110,7 @@ func (fc *FileCache[K]) SaveFile(key K, data []byte) error {
 	return fc.SaveFileWithExt(key, data, "")
 }
 
-func (fc *FileCache[K]) getManifest() map[K]fileinfo.FileInfo {
+func (fc *FileCache[K]) getManifest() map[K]*fileinfo.FileInfo {
 	if fc.manifest == nil {
 		manifest, err := fc.manifestStore.Load()
 		if err != nil {
@@ -118,7 +118,7 @@ func (fc *FileCache[K]) getManifest() map[K]fileinfo.FileInfo {
 		}
 
 		if manifest == nil {
-			manifest = map[K]fileinfo.FileInfo{}
+			manifest = map[K]*fileinfo.FileInfo{}
 		}
 
 		fc.manifest = manifest
@@ -133,16 +133,16 @@ func (fc *FileCache[K]) getOrCreateFileInfo(key K, ext string) *fileinfo.FileInf
 
 	fi, found := manifest[key]
 	if found {
-		return &fi
+		return fi
 	}
 	fileName := uuid.New().String()
 	fileName += ext
 
-	fi = *fileinfo.New(fileName)
+	fi = fileinfo.New(fileName)
 
 	manifest[key] = fi
 
-	return &fi
+	return fi
 }
 
 func (fc *FileCache[K]) tryGetFileInfo(key K) *fileinfo.FileInfo {
@@ -154,7 +154,7 @@ func (fc *FileCache[K]) tryGetFileInfo(key K) *fileinfo.FileInfo {
 		return nil
 	}
 
-	return &fi
+	return fi
 }
 
 func (fc *FileCache[K]) tryGetFileInfoWithExpire(key K, expireDuration time.Duration) *fileinfo.FileInfo {
