@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/louie-jones-strong/go-shared/cache"
 	"github.com/louie-jones-strong/go-shared/logger"
 )
 
@@ -23,6 +24,24 @@ func NewCachedFileStorage[M any](filePath string, subStore Storage[M]) *CachedFi
 		lastModTime:   nil,
 		cachedContent: defaultOut,
 	}
+}
+
+func (s *CachedFileStorage[M]) IsValid() bool {
+	if s.lastModTime == nil {
+		return false
+	}
+	modTime, err := s.getModTime()
+	isValid := err == nil && modTime.Equal(*s.lastModTime)
+
+	if !isValid {
+		s.lastModTime = nil
+	}
+
+	return isValid
+}
+
+func (s *CachedFileStorage[M]) AddSubScope(sub cache.CacheInstance) {
+	panic("CachedFileStorage does not support sub scopes")
 }
 
 func (s *CachedFileStorage[M]) Save(obj M) error {
@@ -45,6 +64,10 @@ func (s *CachedFileStorage[M]) Load() (M, error) {
 		return s.cachedContent, nil
 	}
 	logger.Debug("Cache MISS for: %v", s.filePath)
+
+	cs := cache.GetCacheService()
+	cs.AddOpenScope(s)
+	defer cs.CloseScope(s)
 
 	output, err := s.subStore.Load()
 	if err != nil {
