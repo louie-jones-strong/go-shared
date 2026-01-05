@@ -32,6 +32,14 @@ func (c *FuncCache) AddSubScope(sub CacheInstance) {
 	c.subInstances = append(c.subInstances, sub)
 }
 
+func (c *FuncCache) GetSubScopes() []CacheInstance {
+	return c.subInstances
+}
+
+func (c *FuncCache) ToString() string {
+	return "FuncCache"
+}
+
 func (c *FuncCache) GetValue() (any, bool) {
 	if !c.IsValid() {
 		return nil, false

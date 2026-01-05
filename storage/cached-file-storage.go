@@ -43,6 +43,13 @@ func (s *CachedFileStorage[M]) IsValid() bool {
 func (s *CachedFileStorage[M]) AddSubScope(sub cache.CacheInstance) {
 	panic("CachedFileStorage does not support sub scopes")
 }
+func (s *CachedFileStorage[M]) GetSubScopes() []cache.CacheInstance {
+	return nil
+}
+
+func (s *CachedFileStorage[M]) ToString() string {
+	return "CachedFileStorage: " + s.filePath
+}
 
 func (s *CachedFileStorage[M]) Save(obj M) error {
 	var output M
