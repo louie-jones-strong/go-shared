@@ -8,7 +8,7 @@ type BaseCacheScope[T any] struct {
 func NewBaseCacheScope[T any]() BaseCacheScope[T] {
 	return BaseCacheScope[T]{
 		subInstances: make([]CacheInstance, 0, 10),
-		cachedVal:    new(T),
+		cachedVal:    nil,
 	}
 }
 
@@ -32,6 +32,11 @@ func (c *BaseCacheScope[T]) IsValid() bool {
 }
 
 func (c *BaseCacheScope[T]) AddSubScope(sub CacheInstance) {
+	for _, existing := range c.subInstances {
+		if existing == sub {
+			return
+		}
+	}
 	c.subInstances = append(c.subInstances, sub)
 }
 

@@ -13,12 +13,11 @@ func CacheCall[V any](f func() (V, error)) (V, error) {
 	cs.AddOpenScope(ci)
 	defer cs.CloseScope(ci)
 
-	val, hasVal := GetVal[V](ci)
-	if hasVal {
-		return val, nil
+	if ci.IsValid() {
+		return GetVal[V](ci)
 	}
 
-	val, err = f()
+	val, err := f()
 	if err != nil {
 		return defaultOut, err
 	}

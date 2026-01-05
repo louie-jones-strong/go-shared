@@ -1,5 +1,7 @@
 package cache
 
+import "fmt"
+
 type FuncCache struct {
 	BaseCacheScope[any]
 	key cacheKey
@@ -23,13 +25,13 @@ func (c *FuncCache) ToString() string {
 	return "FuncCache: " + c.key.ToString()
 }
 
-func GetVal[V any](ci *FuncCache) (V, bool) {
+func GetVal[V any](ci *FuncCache) (V, error) {
 
 	val := ci.GetValue()
 	typeVal, ok := val.(V)
 	if !ok {
-		panic("cached value has unexpected type")
+		return typeVal, fmt.Errorf("cached value has unexpected type: %#v", val)
 	}
 
-	return typeVal, true
+	return typeVal, nil
 }

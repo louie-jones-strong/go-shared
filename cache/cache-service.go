@@ -41,7 +41,16 @@ func (s *CacheService) getLastOpenScope() CacheInstance {
 func (s *CacheService) AddOpenScope(scope CacheInstance) {
 	last := s.getLastOpenScope()
 	if last == nil {
-		s.rootCaches = append(s.rootCaches, scope)
+		inRoot := false
+		for _, rootCache := range s.rootCaches {
+			if rootCache == scope {
+				inRoot = true
+				break
+			}
+		}
+		if !inRoot {
+			s.rootCaches = append(s.rootCaches, scope)
+		}
 	} else {
 		last.AddSubScope(scope)
 	}
