@@ -7,6 +7,7 @@ type CacheInstance interface {
 	AddSubScope(sub CacheInstance)
 	GetSubScopes() []CacheInstance
 	ToString() string
+	Clear()
 }
 
 type CacheService struct {
@@ -26,17 +27,6 @@ func GetCacheService() *CacheService {
 	return cacheServiceInstance
 }
 
-func (s *CacheService) GetOrCreate(ck cacheKey) *FuncCache {
-
-	cacheInstance, exists := s.funcCaches[ck]
-	if !exists {
-		cacheInstance = NewFuncCache()
-		s.funcCaches[ck] = cacheInstance
-	}
-
-	return cacheInstance
-}
-
 func (s *CacheService) GetRootCaches() []CacheInstance {
 	return s.rootCaches
 }
@@ -50,10 +40,10 @@ func (s *CacheService) getLastOpenScope() CacheInstance {
 
 func (s *CacheService) AddOpenScope(scope CacheInstance) {
 	last := s.getLastOpenScope()
-	if last != nil {
-		last.AddSubScope(scope)
-	} else {
+	if last == nil {
 		s.rootCaches = append(s.rootCaches, scope)
+	} else {
+		last.AddSubScope(scope)
 	}
 	s.openScopeStack = append(s.openScopeStack, scope)
 }

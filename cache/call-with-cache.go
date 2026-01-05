@@ -9,22 +9,20 @@ func CacheCall[V any](f func() (V, error)) (V, error) {
 	}
 
 	cs := GetCacheService()
-	ci := cs.GetOrCreate(ck)
+	ci := FindOrNewFuncCache(cs, ck)
+	cs.AddOpenScope(ci)
+	defer cs.CloseScope(ci)
 
 	val, hasVal := GetVal[V](ci)
 	if hasVal {
 		return val, nil
 	}
 
-	cs.AddOpenScope(ci)
-
 	val, err = f()
 	if err != nil {
-		cs.CloseScope(ci)
 		return defaultOut, err
 	}
 
 	ci.SetValue(val)
-	cs.CloseScope(ci)
 	return val, nil
 }

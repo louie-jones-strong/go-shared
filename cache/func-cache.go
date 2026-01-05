@@ -1,65 +1,31 @@
 package cache
 
 type FuncCache struct {
-	val      any
-	isValSet bool
-
-	subInstances []CacheInstance
+	BaseCacheScope[any]
+	key cacheKey
 }
 
-func NewFuncCache() *FuncCache {
-	return &FuncCache{
-		val:          nil,
-		isValSet:     false,
-		subInstances: nil,
-	}
-}
-
-func (c *FuncCache) IsValid() bool {
-	if !c.isValSet {
-		return false
+func FindOrNewFuncCache(cs *CacheService, ck cacheKey) *FuncCache {
+	cacheInstance, exists := cs.funcCaches[ck]
+	if exists {
+		return cacheInstance
 	}
 
-	for _, instance := range c.subInstances {
-		if !instance.IsValid() {
-			return false
-		}
+	c := &FuncCache{
+		BaseCacheScope: NewBaseCacheScope[any](),
+		key:            ck,
 	}
-	return true
-}
-
-func (c *FuncCache) AddSubScope(sub CacheInstance) {
-	c.subInstances = append(c.subInstances, sub)
-}
-
-func (c *FuncCache) GetSubScopes() []CacheInstance {
-	return c.subInstances
+	cs.funcCaches[ck] = c
+	return c
 }
 
 func (c *FuncCache) ToString() string {
-	return "FuncCache"
-}
-
-func (c *FuncCache) GetValue() (any, bool) {
-	if !c.IsValid() {
-		return nil, false
-	}
-	return c.val, true
-}
-
-func (c *FuncCache) SetValue(value any) {
-	c.val = value
-	c.isValSet = true
+	return "FuncCache: " + c.key.ToString()
 }
 
 func GetVal[V any](ci *FuncCache) (V, bool) {
-	var defaultOut V
 
-	val, hasVal := ci.GetValue()
-	if !hasVal {
-		return defaultOut, false
-	}
-
+	val := ci.GetValue()
 	typeVal, ok := val.(V)
 	if !ok {
 		panic("cached value has unexpected type")

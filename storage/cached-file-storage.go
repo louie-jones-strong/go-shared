@@ -5,46 +5,52 @@ import (
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/cache"
-	"github.com/louie-jones-strong/go-shared/logger"
 )
 
 type CachedFileStorage[M any] struct {
+	cache.BaseCacheScope[M]
 	subStore Storage[M]
 
-	filePath      string
-	lastModTime   *time.Time
-	cachedContent M
+	filePath    string
+	lastModTime *time.Time
 }
 
 func NewCachedFileStorage[M any](filePath string, subStore Storage[M]) *CachedFileStorage[M] {
-	var defaultOut M
 	return &CachedFileStorage[M]{
-		subStore:      subStore,
-		filePath:      filePath,
-		lastModTime:   nil,
-		cachedContent: defaultOut,
+		BaseCacheScope: cache.NewBaseCacheScope[M](),
+		subStore:       subStore,
+		filePath:       filePath,
+		lastModTime:    nil,
 	}
 }
 
 func (s *CachedFileStorage[M]) IsValid() bool {
-	if s.lastModTime == nil {
+	modTime, err := s.getModTime()
+	if err != nil {
+		modTime = nil
+	}
+	return s.isValid(modTime)
+}
+
+func (s *CachedFileStorage[M]) isValid(modTime *time.Time) bool {
+	if !s.BaseCacheScope.IsValid() {
 		return false
 	}
-	modTime, err := s.getModTime()
-	isValid := err == nil && modTime.Equal(*s.lastModTime)
 
-	if !isValid {
-		s.lastModTime = nil
+	isValid := false
+	if s.lastModTime != nil {
+		isValid = modTime != nil && modTime.Equal(*s.lastModTime)
 	}
 
+	if !isValid {
+		s.Clear()
+	}
 	return isValid
 }
 
-func (s *CachedFileStorage[M]) AddSubScope(sub cache.CacheInstance) {
-	panic("CachedFileStorage does not support sub scopes")
-}
-func (s *CachedFileStorage[M]) GetSubScopes() []cache.CacheInstance {
-	return nil
+func (s *CachedFileStorage[M]) Clear() {
+	s.lastModTime = nil
+	s.BaseCacheScope.Clear()
 }
 
 func (s *CachedFileStorage[M]) ToString() string {
@@ -52,13 +58,14 @@ func (s *CachedFileStorage[M]) ToString() string {
 }
 
 func (s *CachedFileStorage[M]) Save(obj M) error {
-	var output M
-	s.cachedContent = output
-	s.lastModTime = nil
+	s.Clear()
 	return s.subStore.Save(obj)
 }
 
 func (s *CachedFileStorage[M]) Load() (M, error) {
+	cs := cache.GetCacheService()
+	cs.AddOpenScope(s)
+	defer cs.CloseScope(s)
 
 	var defaultOut M
 	modTime, err := s.getModTime()
@@ -66,15 +73,9 @@ func (s *CachedFileStorage[M]) Load() (M, error) {
 		return defaultOut, err
 	}
 
-	if s.lastModTime != nil && modTime.Equal(*s.lastModTime) {
-		logger.Debug("Cache HIT for: %v", s.filePath)
-		return s.cachedContent, nil
+	if s.isValid(modTime) {
+		return s.GetValue(), err
 	}
-	logger.Debug("Cache MISS for: %v", s.filePath)
-
-	cs := cache.GetCacheService()
-	cs.AddOpenScope(s)
-	defer cs.CloseScope(s)
 
 	output, err := s.subStore.Load()
 	if err != nil {
@@ -82,7 +83,7 @@ func (s *CachedFileStorage[M]) Load() (M, error) {
 	}
 
 	s.lastModTime = modTime
-	s.cachedContent = output
+	s.BaseCacheScope.SetValue(output)
 
 	return output, nil
 }

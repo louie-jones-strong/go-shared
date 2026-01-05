@@ -26,6 +26,10 @@ func newCacheKey(f any, args ...any) (cacheKey, error) {
 	return res, nil
 }
 
+func (ck *cacheKey) ToString() string {
+	return ck.funcName + fmt.Sprintf(" Args: %v", ck.args)
+}
+
 func getFunctionName(f any) string {
 	fn := runtime.FuncForPC(reflect.ValueOf(f).Pointer())
 
