@@ -73,6 +73,10 @@ func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, 
 	return numRemoved, nil
 }
 
+func (fc *FileCache[K]) TryLoadFile(key K) ([]byte, error) {
+	return fc.TryLoadFileWithExpire(key, -1)
+}
+
 func (fc *FileCache[K]) TryLoadFileWithExpire(key K, expireDuration time.Duration) ([]byte, error) {
 
 	fc.mu.RLock()
@@ -82,6 +86,11 @@ func (fc *FileCache[K]) TryLoadFileWithExpire(key K, expireDuration time.Duratio
 		return nil, nil
 	}
 
+	return fc.LoadFileUsingFI(fi)
+}
+
+func (fc *FileCache[K]) LoadFileUsingFI(fi *fileinfo.FileInfo) ([]byte, error) {
+
 	filePath := fi.GetFilePath(fc.itemFolderPath)
 
 	data, err := storage.ReadBytesFromFile(filePath)
@@ -90,10 +99,6 @@ func (fc *FileCache[K]) TryLoadFileWithExpire(key K, expireDuration time.Duratio
 	}
 
 	return data, nil
-}
-
-func (fc *FileCache[K]) TryLoadFile(key K) ([]byte, error) {
-	return fc.TryLoadFileWithExpire(key, -1)
 }
 
 func (fc *FileCache[K]) SaveFileWithExt(key K, data []byte, ext string) error {
@@ -156,7 +161,7 @@ func (fc *FileCache[K]) getOrCreateFileInfo(key K, ext string) *fileinfo.FileInf
 	return fi
 }
 
-func (fc *FileCache[K]) tryGetFileInfo(key K) *fileinfo.FileInfo {
+func (fc *FileCache[K]) TryGetFileInfo(key K) *fileinfo.FileInfo {
 
 	manifest := fc.getManifest()
 
@@ -170,7 +175,7 @@ func (fc *FileCache[K]) tryGetFileInfo(key K) *fileinfo.FileInfo {
 
 func (fc *FileCache[K]) tryGetFileInfoWithExpire(key K, expireDuration time.Duration) *fileinfo.FileInfo {
 
-	fi := fc.tryGetFileInfo(key)
+	fi := fc.TryGetFileInfo(key)
 	if fi == nil {
 		return nil
 	}

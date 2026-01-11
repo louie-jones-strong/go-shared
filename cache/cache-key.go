@@ -19,7 +19,17 @@ func newCacheKey(f any, args ...any) (cacheKey, error) {
 	}
 
 	res.args = [10]any{}
-	copy(res.args[:], args)
+	for i, _ := range args {
+		arg := args[i]
+
+		// check if arg is comparable
+		argType := reflect.TypeOf(arg)
+		if !argType.Comparable() {
+			return res, fmt.Errorf("arg %d type is not comparable: %s", i, argType.String())
+		}
+
+		res.args[i] = arg
+	}
 
 	res.funcName = getFunctionName(f)
 
