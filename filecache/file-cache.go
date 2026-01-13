@@ -2,7 +2,6 @@ package filecache
 
 import (
 	"errors"
-	"maps"
 	"os"
 	"sync"
 	"time"
@@ -42,18 +41,32 @@ func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, 
 		return 0, nil
 	}
 
+	keysToRemove := make([]K, 0)
+	for key := range manifest {
+		fi := manifest[key]
+		if !fi.IsValid(expireDuration) {
+			keysToRemove = append(keysToRemove, key)
+		}
+	}
+	return fc.RemoveFiles(keysToRemove...)
+}
+
+func (fc *FileCache[K]) RemoveFiles(keysToRemove ...K) (int, error) {
+	manifest := fc.getManifest()
+	if manifest == nil {
+		logger.Debug("RemoveFiles called but manifest is nil")
+		return 0, nil
+	}
+
 	fc.mu.Lock()
+	defer fc.saveManifest()
 	defer fc.mu.Unlock()
 
-	defer fc.saveManifest()
-
-	keys := maps.Keys(manifest)
-
 	numRemoved := 0
-	for key := range keys {
-		fi := manifest[key]
-
-		if fi.IsValid(expireDuration) {
+	for _, key := range keysToRemove {
+		fi, found := manifest[key]
+		if !found {
+			logger.Debug("FileCache: No file info found for key during removal: %v", key)
 			continue
 		}
 
@@ -124,6 +137,24 @@ func (fc *FileCache[K]) SaveFileWithExt(key K, data []byte, ext string) error {
 
 func (fc *FileCache[K]) SaveFile(key K, data []byte) error {
 	return fc.SaveFileWithExt(key, data, "")
+}
+
+type CacheItem[K comparable] struct {
+	Key      K
+	FileInfo *fileinfo.FileInfo
+}
+
+func (fc *FileCache[K]) GetItems() []CacheItem[K] {
+	manifest := fc.getManifest()
+
+	items := make([]CacheItem[K], 0, len(manifest))
+	for key, fi := range manifest {
+		items = append(items, CacheItem[K]{
+			Key:      key,
+			FileInfo: fi,
+		})
+	}
+	return items
 }
 
 func (fc *FileCache[K]) getManifest() map[K]*fileinfo.FileInfo {
