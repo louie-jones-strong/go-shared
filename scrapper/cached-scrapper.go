@@ -39,13 +39,9 @@ func (cs *CachedScrapper) CleanUp() {
 func (cs *CachedScrapper) ScrapURLWithCache(url string, expireDuration time.Duration) ([]byte, error) {
 
 	// try load from cache
-	cachedData, err := cs.siteCache.TryLoadFileWithExpire(url, expireDuration)
-	if err != nil {
-		return nil, err
-	}
-
-	if cachedData != nil {
-		return cachedData, nil
+	fi := cs.siteCache.TryGetFileInfo(url)
+	if fi.IsValid(expireDuration) {
+		return fi.LoadFile(filecache.DefaultFileKey)
 	}
 
 	// fall back to scrapping
@@ -55,7 +51,7 @@ func (cs *CachedScrapper) ScrapURLWithCache(url string, expireDuration time.Dura
 	}
 
 	// save to cache
-	err = cs.siteCache.SaveFileWithExt(url, data, cs.fileExt)
+	err = fi.SaveFile(filecache.DefaultFileKey, cs.fileExt, data)
 	if err != nil {
 		return nil, err
 	}

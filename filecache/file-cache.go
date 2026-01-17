@@ -2,22 +2,24 @@ package filecache
 
 import (
 	"errors"
-	"os"
 	"sync"
 	"time"
 
-	"github.com/louie-jones-strong/go-shared/filecache/fileinfo"
+	"github.com/louie-jones-strong/go-shared/collections/maps"
 	"github.com/louie-jones-strong/go-shared/logger"
 	"github.com/louie-jones-strong/go-shared/storage"
-
-	"github.com/google/uuid"
 )
 
+type iFileCache interface {
+	saveManifest() error
+	getFolderPath() string
+}
+
 type FileCache[K comparable] struct {
-	manifestStore  storage.Storage[map[K]*fileinfo.FileInfo]
+	manifestStore  storage.Storage[map[K]*FileGroupInfo]
 	itemFolderPath string
 
-	manifest map[K]*fileinfo.FileInfo
+	manifest map[K]*FileGroupInfo
 	mu       sync.RWMutex
 }
 
@@ -26,12 +28,50 @@ func New[K comparable](
 	itemFolderPath string,
 ) *FileCache[K] {
 	return &FileCache[K]{
-		manifestStore: storage.NewJSONStorage[map[K]*fileinfo.FileInfo](
+		manifestStore: storage.NewJSONStorage[map[K]*FileGroupInfo](
 			manifestPath,
 		),
 		itemFolderPath: itemFolderPath,
 		manifest:       nil,
 	}
+}
+
+func (fc *FileCache[K]) getFolderPath() string {
+	return fc.itemFolderPath
+}
+
+func (fc *FileCache[K]) getManifest() map[K]*FileGroupInfo {
+	if fc.manifest == nil {
+		manifest, err := fc.manifestStore.Load()
+		if err != nil {
+			logger.Debug("error loading manifest store")
+		}
+
+		if manifest == nil {
+			manifest = map[K]*FileGroupInfo{}
+		}
+
+		for _, v := range manifest {
+			v.setFolder(fc)
+		}
+
+		fc.manifest = manifest
+	}
+
+	return fc.manifest
+}
+
+func (fc *FileCache[K]) saveManifest() error {
+	if fc.manifest == nil {
+		return errors.New("Cannot save file cache with nil manifest")
+	}
+
+	err := fc.manifestStore.Save(fc.manifest)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, error) {
@@ -72,109 +112,22 @@ func (fc *FileCache[K]) RemoveFiles(keysToRemove ...K) (int, error) {
 
 		// delete the file info from the manifest
 		delete(manifest, key)
-
-		// remove the file
-		filePath := fi.GetFilePath(fc.itemFolderPath)
-		err := os.Remove(filePath)
+		err := fi.DeleteFiles()
 		if err != nil {
 			return numRemoved, err
 		}
-
 		numRemoved++
 	}
 
 	return numRemoved, nil
 }
 
-func (fc *FileCache[K]) TryLoadFile(key K) ([]byte, error) {
-	return fc.TryLoadFileWithExpire(key, -1)
-}
-
-func (fc *FileCache[K]) TryLoadFileWithExpire(key K, expireDuration time.Duration) ([]byte, error) {
-
-	fc.mu.RLock()
-	defer fc.mu.RUnlock()
-	fi := fc.tryGetFileInfoWithExpire(key, expireDuration)
-	if fi == nil {
-		return nil, nil
-	}
-
-	return fc.LoadFileUsingFI(fi)
-}
-
-func (fc *FileCache[K]) LoadFileUsingFI(fi *fileinfo.FileInfo) ([]byte, error) {
-
-	filePath := fi.GetFilePath(fc.itemFolderPath)
-
-	data, err := storage.ReadBytesFromFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
-}
-
-func (fc *FileCache[K]) SaveFileWithExt(key K, data []byte, ext string) error {
-
-	fc.mu.Lock()
-	defer fc.mu.Unlock()
-
-	fi := fc.getOrCreateFileInfo(key, ext)
-
-	filePath := fi.GetFilePath(fc.itemFolderPath)
-
-	err := storage.WriteBytesToFile(filePath, data)
-	if err != nil {
-		return err
-	}
-
-	fi.UpdateLastUpdated()
-
-	err = fc.saveManifest()
-
-	return err
-}
-
-func (fc *FileCache[K]) SaveFile(key K, data []byte) error {
-	return fc.SaveFileWithExt(key, data, "")
-}
-
-type CacheItem[K comparable] struct {
-	Key      K
-	FileInfo *fileinfo.FileInfo
-}
-
-func (fc *FileCache[K]) GetItems() []CacheItem[K] {
+func (fc *FileCache[K]) GetItems() []maps.KVP[K, *FileGroupInfo] {
 	manifest := fc.getManifest()
-
-	items := make([]CacheItem[K], 0, len(manifest))
-	for key, fi := range manifest {
-		items = append(items, CacheItem[K]{
-			Key:      key,
-			FileInfo: fi,
-		})
-	}
-	return items
+	return maps.ConvertMapToKVPList(manifest)
 }
 
-func (fc *FileCache[K]) getManifest() map[K]*fileinfo.FileInfo {
-	if fc.manifest == nil {
-		manifest, err := fc.manifestStore.Load()
-		if err != nil {
-			logger.Debug("error loading manifest store")
-		}
-
-		if manifest == nil {
-			manifest = map[K]*fileinfo.FileInfo{}
-		}
-
-		fc.manifest = manifest
-	}
-
-	return fc.manifest
-}
-
-func (fc *FileCache[K]) getOrCreateFileInfo(key K, ext string) *fileinfo.FileInfo {
+func (fc *FileCache[K]) TryGetFileInfo(key K) *FileGroupInfo {
 
 	manifest := fc.getManifest()
 
@@ -182,51 +135,21 @@ func (fc *FileCache[K]) getOrCreateFileInfo(key K, ext string) *fileinfo.FileInf
 	if found {
 		return fi
 	}
-	fileName := uuid.New().String()
-	fileName += ext
-
-	fi = fileinfo.New(fileName)
-
-	manifest[key] = fi
-
-	return fi
+	return nil
 }
 
-func (fc *FileCache[K]) TryGetFileInfo(key K) *fileinfo.FileInfo {
+func (fc *FileCache[K]) GetOrCreateFileInfo(key K) *FileGroupInfo {
 
 	manifest := fc.getManifest()
 
 	fi, found := manifest[key]
-	if !found {
-		return nil
+	if found {
+		return fi
 	}
+
+	fi = newFGI()
+	fi.setFolder(fc)
+	manifest[key] = fi
 
 	return fi
-}
-
-func (fc *FileCache[K]) tryGetFileInfoWithExpire(key K, expireDuration time.Duration) *fileinfo.FileInfo {
-
-	fi := fc.TryGetFileInfo(key)
-	if fi == nil {
-		return nil
-	}
-
-	if !fi.IsValid(expireDuration) {
-		return nil
-	}
-
-	return fi
-}
-
-func (fc *FileCache[K]) saveManifest() error {
-	if fc.manifest == nil {
-		return errors.New("Cannot save file cache with nil manifest")
-	}
-
-	err := fc.manifestStore.Save(fc.manifest)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
