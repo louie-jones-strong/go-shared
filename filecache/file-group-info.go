@@ -39,10 +39,6 @@ func (fi *FileGroupInfo) setFolder(cacheHolder iFileCache) {
 	fi.cacheHolder = cacheHolder
 }
 
-func (fi *FileGroupInfo) updateLastUpdated() {
-	fi.LastUpdatedTimestamp = time.Now().Unix()
-}
-
 func (fi *FileGroupInfo) GetCreatedTimestamp() time.Time {
 	return time.Unix(fi.CreatedTimestamp, 0)
 }
@@ -67,6 +63,8 @@ func (fi *FileGroupInfo) IsValid(expireDuration time.Duration) bool {
 }
 
 func (fi *FileGroupInfo) SaveFile(key string, ext string, content []byte) error {
+	unlock := fi.cacheHolder.wLock()
+	defer unlock()
 
 	fileName, exists := fi.Files[key]
 	if !exists {
@@ -78,13 +76,21 @@ func (fi *FileGroupInfo) SaveFile(key string, ext string, content []byte) error 
 	if err != nil {
 		return err
 	}
-	fi.updateLastUpdated()
-	return fi.cacheHolder.saveManifest()
+	fi.LastUpdatedTimestamp = time.Now().Unix()
+
+	err = fi.cacheHolder.saveManifest()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (fi *FileGroupInfo) LoadFiles(keys ...string) (map[string][]byte, error) {
-	result := make(map[string][]byte)
+	unlock := fi.cacheHolder.rLock()
+	defer unlock()
 
+	result := make(map[string][]byte)
 	if len(keys) > 0 {
 		for _, key := range keys {
 			data, err := fi.LoadFile(key)
@@ -107,6 +113,9 @@ func (fi *FileGroupInfo) LoadFiles(keys ...string) (map[string][]byte, error) {
 }
 
 func (fi *FileGroupInfo) LoadFile(key string) ([]byte, error) {
+	unlock := fi.cacheHolder.rLock()
+	defer unlock()
+
 	fileName, exists := fi.Files[key]
 	if !exists {
 		return nil, fmt.Errorf("file with key %s does not exist", key)
@@ -120,7 +129,10 @@ func (fi *FileGroupInfo) LoadFile(key string) ([]byte, error) {
 	return data, nil
 }
 
-func (fi *FileGroupInfo) DeleteFiles() error {
+func (fi *FileGroupInfo) deleteFiles() error {
+	unlock := fi.cacheHolder.rLock()
+	defer unlock()
+
 	for _, fileName := range fi.Files {
 		filePath := filepath.Join(fi.cacheHolder.getFolderPath(), fileName)
 		err := os.Remove(filePath)
@@ -128,5 +140,5 @@ func (fi *FileGroupInfo) DeleteFiles() error {
 			return err
 		}
 	}
-	return fi.cacheHolder.saveManifest()
+	return nil
 }

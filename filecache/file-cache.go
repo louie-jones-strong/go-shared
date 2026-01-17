@@ -11,8 +11,10 @@ import (
 )
 
 type iFileCache interface {
-	saveManifest() error
 	getFolderPath() string
+	wLock() func()
+	rLock() func()
+	saveManifest() error
 }
 
 type FileCache[K comparable] struct {
@@ -38,6 +40,16 @@ func New[K comparable](
 
 func (fc *FileCache[K]) getFolderPath() string {
 	return fc.itemFolderPath
+}
+
+func (fc *FileCache[K]) wLock() func() {
+	fc.mu.Lock()
+	return fc.mu.Unlock
+}
+
+func (fc *FileCache[K]) rLock() func() {
+	fc.mu.RLock()
+	return fc.mu.RUnlock
 }
 
 func (fc *FileCache[K]) getManifest() map[K]*FileGroupInfo {
@@ -99,10 +111,10 @@ func (fc *FileCache[K]) RemoveFiles(keysToRemove ...K) (int, error) {
 	}
 
 	fc.mu.Lock()
-	defer fc.saveManifest()
 	defer fc.mu.Unlock()
 
 	numRemoved := 0
+	var err error
 	for _, key := range keysToRemove {
 		fi, found := manifest[key]
 		if !found {
@@ -112,14 +124,15 @@ func (fc *FileCache[K]) RemoveFiles(keysToRemove ...K) (int, error) {
 
 		// delete the file info from the manifest
 		delete(manifest, key)
-		err := fi.DeleteFiles()
+		err = fi.deleteFiles()
 		if err != nil {
-			return numRemoved, err
+			break
 		}
 		numRemoved++
 	}
 
-	return numRemoved, nil
+	fc.saveManifest()
+	return numRemoved, err
 }
 
 func (fc *FileCache[K]) GetItems() []maps.KVP[K, *FileGroupInfo] {
@@ -128,9 +141,10 @@ func (fc *FileCache[K]) GetItems() []maps.KVP[K, *FileGroupInfo] {
 }
 
 func (fc *FileCache[K]) TryGetFileInfo(key K) *FileGroupInfo {
+	unlock := fc.rLock()
+	defer unlock()
 
 	manifest := fc.getManifest()
-
 	fi, found := manifest[key]
 	if found {
 		return fi
@@ -139,13 +153,17 @@ func (fc *FileCache[K]) TryGetFileInfo(key K) *FileGroupInfo {
 }
 
 func (fc *FileCache[K]) GetOrCreateFileInfo(key K) *FileGroupInfo {
+	unlock := fc.rLock()
 
 	manifest := fc.getManifest()
-
 	fi, found := manifest[key]
+	unlock()
 	if found {
 		return fi
 	}
+
+	unlock = fc.wLock()
+	defer unlock()
 
 	fi = newFGI()
 	fi.setFolder(fc)
