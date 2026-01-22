@@ -3,8 +3,8 @@ package dataframe
 import (
 	"encoding/csv"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
-	"github.com/louie-jones-strong/go-shared/dataframe/series"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/apptype"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series"
 	"github.com/louie-jones-strong/go-shared/storage"
 )
 

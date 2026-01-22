@@ -6,9 +6,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
-	"github.com/louie-jones-strong/go-shared/dataframe/series/elements"
-	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/apptype"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series/elements"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series/elements/element"
 	"gonum.org/v1/gonum/stat"
 )
 

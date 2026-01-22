@@ -3,7 +3,7 @@ package element
 import (
 	"math"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/apptype"
 )
 
 type FloatElement struct {

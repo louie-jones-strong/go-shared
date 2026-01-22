@@ -1,6 +1,6 @@
 package element
 
-import "github.com/louie-jones-strong/go-shared/dataframe/apptype"
+import "github.com/louie-jones-strong/go-shared/collections/dataframe/apptype"
 
 type BoolElement struct {
 	BaseElement[bool]

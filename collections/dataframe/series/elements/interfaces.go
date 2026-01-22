@@ -1,8 +1,8 @@
 package elements
 
 import (
-	"github.com/louie-jones-strong/go-shared/dataframe/apptype"
-	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/apptype"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series/elements/element"
 )
 
 type IElements interface {

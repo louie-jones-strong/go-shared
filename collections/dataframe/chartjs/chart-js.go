@@ -3,7 +3,7 @@ package chartjs
 import (
 	"fmt"
 
-	"github.com/louie-jones-strong/go-shared/dataframe"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe"
 )
 
 type ChartJSData struct {

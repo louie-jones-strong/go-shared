@@ -6,8 +6,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/series"
-	"github.com/louie-jones-strong/go-shared/dataframe/series/elements/element"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series/elements/element"
 )
 
 type DataFrame struct {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/louie-jones-strong/go-shared/dataframe/series"
+	"github.com/louie-jones-strong/go-shared/collections/dataframe/series"
 	"github.com/stretchr/testify/assert"
 )
 
