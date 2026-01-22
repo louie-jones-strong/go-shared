@@ -3,6 +3,7 @@
 	"words": [
 		"apptype",
 		"dataframe",
+		"godotenv",
 		"gonum",
 		"stretchr"
 	],
