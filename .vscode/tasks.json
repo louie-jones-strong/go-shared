@@ -43,11 +43,11 @@
 		},
 		{
 			"label": "Test Short",
-			"command": "go run gotest.tools/gotestsum@latest --format-icons hivis -- ./... -cover -short",
+			"command": "go run gotest.tools/gotestsum@latest --format-icons hivis -- ./... -cover -timeout 10s -short",
 		},
 		{
 			"label": "Test All",
-			"command": "go run gotest.tools/gotestsum@latest --format-icons hivis -- ./... -cover",
+			"command": "go run gotest.tools/gotestsum@latest --format-icons hivis -- ./... -cover -timeout 10s",
 		},
 		{
 			"label": "Lint go files",

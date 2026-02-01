@@ -51,6 +51,9 @@ func (fi *FileGroupInfo) IsValid(expireDuration time.Duration) bool {
 	if fi == nil {
 		return false
 	}
+	if len(fi.Files) == 0 {
+		return false
+	}
 
 	if expireDuration < 0 {
 		return true
@@ -63,6 +66,13 @@ func (fi *FileGroupInfo) IsValid(expireDuration time.Duration) bool {
 }
 
 func (fi *FileGroupInfo) SaveFile(key string, ext string, content []byte) error {
+	if fi == nil {
+		return fmt.Errorf("SaveFile called with nil FileGroupInfo")
+	}
+	if fi.cacheHolder == nil {
+		return fmt.Errorf("SaveFile called with nil cacheHolder")
+	}
+
 	unlock := fi.cacheHolder.wLock()
 	defer unlock()
 
@@ -87,6 +97,13 @@ func (fi *FileGroupInfo) SaveFile(key string, ext string, content []byte) error 
 }
 
 func (fi *FileGroupInfo) LoadFiles(keys ...string) (map[string][]byte, error) {
+	if fi == nil {
+		return nil, fmt.Errorf("LoadFiles called with nil FileGroupInfo")
+	}
+	if fi.cacheHolder == nil {
+		return nil, fmt.Errorf("LoadFiles called with nil cacheHolder")
+	}
+
 	unlock := fi.cacheHolder.rLock()
 	defer unlock()
 
@@ -113,6 +130,13 @@ func (fi *FileGroupInfo) LoadFiles(keys ...string) (map[string][]byte, error) {
 }
 
 func (fi *FileGroupInfo) LoadFile(key string) ([]byte, error) {
+	if fi == nil {
+		return nil, fmt.Errorf("LoadFile called with nil FileGroupInfo")
+	}
+	if fi.cacheHolder == nil {
+		return nil, fmt.Errorf("LoadFile called with nil cacheHolder")
+	}
+
 	unlock := fi.cacheHolder.rLock()
 	defer unlock()
 
@@ -130,6 +154,13 @@ func (fi *FileGroupInfo) LoadFile(key string) ([]byte, error) {
 }
 
 func (fi *FileGroupInfo) deleteFiles() error {
+	if fi == nil {
+		return fmt.Errorf("deleteFiles called with nil FileGroupInfo")
+	}
+	if fi.cacheHolder == nil {
+		return fmt.Errorf("deleteFiles called with nil cacheHolder")
+	}
+
 	unlock := fi.cacheHolder.rLock()
 	defer unlock()
 

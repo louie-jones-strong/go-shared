@@ -2,6 +2,7 @@ package filecache
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -43,16 +44,28 @@ func (fc *FileCache[K]) getFolderPath() string {
 }
 
 func (fc *FileCache[K]) wLock() func() {
+	if fc == nil {
+		panic("wLock called on nil FileCache")
+	}
+
 	fc.mu.Lock()
 	return fc.mu.Unlock
 }
 
 func (fc *FileCache[K]) rLock() func() {
+	if fc == nil {
+		panic("rLock called on nil FileCache")
+	}
+
 	fc.mu.RLock()
 	return fc.mu.RUnlock
 }
 
 func (fc *FileCache[K]) getManifest() map[K]*FileGroupInfo {
+	if fc == nil {
+		panic("getManifest called on nil FileCache")
+	}
+
 	if fc.manifest == nil {
 		manifest, err := fc.manifestStore.Load()
 		if err != nil {
@@ -74,6 +87,9 @@ func (fc *FileCache[K]) getManifest() map[K]*FileGroupInfo {
 }
 
 func (fc *FileCache[K]) saveManifest() error {
+	if fc == nil {
+		panic("saveManifest called on nil FileCache")
+	}
 	if fc.manifest == nil {
 		return errors.New("Cannot save file cache with nil manifest")
 	}
@@ -87,6 +103,9 @@ func (fc *FileCache[K]) saveManifest() error {
 }
 
 func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, error) {
+	if fc == nil {
+		return 0, fmt.Errorf("CleanupExpiredItems called on nil FileCache")
+	}
 
 	manifest := fc.getManifest()
 	if manifest == nil {
@@ -104,6 +123,10 @@ func (fc *FileCache[K]) CleanupExpiredItems(expireDuration time.Duration) (int, 
 }
 
 func (fc *FileCache[K]) RemoveFiles(keysToRemove ...K) (int, error) {
+	if fc == nil {
+		return 0, fmt.Errorf("CleanupExpiredItems called on nil FileCache")
+	}
+
 	manifest := fc.getManifest()
 	if manifest == nil {
 		logger.Debug("RemoveFiles called but manifest is nil")
@@ -131,7 +154,11 @@ func (fc *FileCache[K]) RemoveFiles(keysToRemove ...K) (int, error) {
 		numRemoved++
 	}
 
-	fc.saveManifest()
+	err = fc.saveManifest()
+	if err != nil {
+		return numRemoved, err
+	}
+
 	return numRemoved, err
 }
 

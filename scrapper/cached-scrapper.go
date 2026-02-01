@@ -39,7 +39,7 @@ func (cs *CachedScrapper) CleanUp() {
 func (cs *CachedScrapper) ScrapURLWithCache(url string, expireDuration time.Duration) ([]byte, error) {
 
 	// try load from cache
-	fi := cs.siteCache.TryGetFileInfo(url)
+	fi := cs.siteCache.GetOrCreateFileInfo(url)
 	if fi.IsValid(expireDuration) {
 		return fi.LoadFile(filecache.DefaultFileKey)
 	}
