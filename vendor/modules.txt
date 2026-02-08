@@ -64,6 +64,9 @@ github.com/chromedp/sysutil
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/go-chi/chi/v5 v5.2.5
+## explicit; go 1.22
+github.com/go-chi/chi/v5
 # github.com/go-json-experiment/json v0.0.0-20250211171154-1ae217ad3535
 ## explicit; go 1.23
 github.com/go-json-experiment/json
