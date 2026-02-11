@@ -3,7 +3,7 @@ package condition
 import (
 	"testing"
 
-	"github.com/louie-jones-strong/go-shared/returnchecker"
+	"github.com/louie-jones-strong/go-shared/testhelpers/returnchecker"
 	"github.com/stretchr/testify/assert"
 )
 
