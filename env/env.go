@@ -19,7 +19,7 @@ func LoadEnv() error {
 func GetKey(key string) (string, error) {
 	val := os.Getenv(key)
 	if val == "" {
-		return "", fmt.Errorf("%v environment variable not set. Please add it to your .env file", key)
+		return "", fmt.Errorf("environment variable \"%v\" not set. Please add it to your .env file", key)
 	}
 	return val, nil
 }
