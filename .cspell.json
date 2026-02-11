@@ -2,10 +2,21 @@
 	"language": "en-gb",
 	"words": [
 		"apptype",
+		"chromedp",
 		"dataframe",
+		"gocarina",
+		"gocsv",
 		"godotenv",
 		"gonum",
-		"stretchr"
+		"returnchecker",
+		"stretchr",
+		"testhelpers",
+		"jinja",
+		"joho",
+		"filecache",
+		"etag",
+		"chartjs",
+		"filegroupinfo"
 	],
 	"dictionaries": [
 		"en-gb",
@@ -15,6 +26,8 @@
 	"ignorePaths": [
 		"vendor",
 		"go.sum",
-		"go.mod"
+		"go.mod",
+		"AGENTS.md",
+		"revive.toml",
 	]
 }
