@@ -19,6 +19,7 @@ func SetupLogging(
 	consoleLogLevel Level,
 	fileLogLevel Level,
 	logFilePath string,
+	extraHandler slog.Handler,
 ) error {
 
 	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
@@ -26,7 +27,7 @@ func SetupLogging(
 		return fmt.Errorf("Failed to open log file: %v", err)
 	}
 
-	multi := newMultiHandler(
+	handlers := []slog.Handler{
 		newCustomConsoleHandler(
 			slog.Level(consoleLogLevel),
 		),
@@ -34,7 +35,12 @@ func SetupLogging(
 			Level:     slog.Level(fileLogLevel),
 			AddSource: true,
 		}),
-	)
+	}
+	if extraHandler != nil {
+		handlers = append(handlers, extraHandler)
+	}
+
+	multi := newMultiHandler(handlers...)
 
 	slog.SetDefault(slog.New(multi))
 	return nil

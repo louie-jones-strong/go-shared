@@ -10,6 +10,7 @@ func TestUnit_Logger(t *testing.T) {
 		DebugLevel,
 		DebugLevel,
 		"test.log",
+		nil,
 	)
 	if err != nil {
 		t.Fatalf("Failed to create logger: %v", err)
