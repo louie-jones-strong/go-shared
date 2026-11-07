@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/collections/maps"
-	"github.com/louie-jones-strong/go-shared/logger"
 	"github.com/louie-jones-strong/go-shared/storage"
+	"github.com/louie-jones-strong/go-shared/telemetry/logger"
 )
 
 type iFileCache interface {

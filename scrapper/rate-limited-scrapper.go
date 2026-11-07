@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/louie-jones-strong/go-shared/logger"
+	"github.com/louie-jones-strong/go-shared/telemetry/logger"
 )
 
 type RateLimitedScrapper struct {

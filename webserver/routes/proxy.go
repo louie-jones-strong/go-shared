@@ -12,7 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/louie-jones-strong/go-shared/filecache"
-	"github.com/louie-jones-strong/go-shared/logger"
+	"github.com/louie-jones-strong/go-shared/telemetry/logger"
 )
 
 func SetupProxyRouter(r *chi.Mux, proxyCache *filecache.FileCache[string]) {

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/chromedp/chromedp"
-	"github.com/louie-jones-strong/go-shared/logger"
+	"github.com/louie-jones-strong/go-shared/telemetry/logger"
 )
 
 type ChromedpScrapper struct {

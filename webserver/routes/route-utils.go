@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/louie-jones-strong/go-shared/logger"
+	"github.com/louie-jones-strong/go-shared/telemetry/logger"
 )
 
 func RenderPage(w http.ResponseWriter, templateName string, data any) {

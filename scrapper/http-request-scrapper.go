@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/louie-jones-strong/go-shared/logger"
+	"github.com/louie-jones-strong/go-shared/telemetry/logger"
 )
 
 type HTTPRequestScrapper struct {
