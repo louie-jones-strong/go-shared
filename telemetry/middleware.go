@@ -84,11 +84,11 @@ func TelemetryMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(wrappedWriter, r.WithContext(ctx))
 
 		// 3. Calculate metrics & duration
-		durationMs := float64(time.Since(startTime).Milliseconds())
+		durationMs := time.Since(startTime).Milliseconds()
 		statusStr := fmt.Sprintf("%d", wrappedWriter.status)
 
 		// Record Dev Metric: HTTP Request Duration Histogram
-		httpDurationMeter.Record(ctx, durationMs, metric.WithAttributes(
+		httpDurationMeter.Record(ctx, float64(durationMs), metric.WithAttributes(
 			attribute.String("http.method", r.Method),
 			attribute.String("http.status", statusStr),
 			attribute.String("http.route", r.URL.Path),
@@ -108,13 +108,23 @@ func TelemetryMiddleware(next http.Handler) http.Handler {
 			"span_id", spanID,
 		}
 
+		span.SetAttributes(attribute.Int("status", wrappedWriter.status))
+
+		logFunc := logger.InfoWithArgs
 		if wrappedWriter.status >= 500 {
-			logger.ErrorWithArgs("HTTP request failed with server error", logAttrs...)
-			span.SetAttributes(attribute.Bool("error", true))
+			logFunc = logger.ErrorWithArgs
 		} else if wrappedWriter.status >= 400 {
-			logger.WarnWithArgs("HTTP request failed with client error", logAttrs...)
-		} else {
-			logger.InfoWithArgs("HTTP request completed", logAttrs...)
+			logFunc = logger.WarnWithArgs
 		}
+		logFunc(
+			fmt.Sprintf(
+				"%v: %s %s in %v",
+				wrappedWriter.status,
+				r.Method,
+				r.URL.Path,
+				durationMs,
+			),
+			logAttrs...,
+		)
 	})
 }
