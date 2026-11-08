@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/louie-jones-strong/go-shared/telemetry/logger"
+	"github.com/louie-jones-strong/go-shared/telemetry/metrics"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -54,8 +55,10 @@ func (rw *responseWriter) Flush() {
 func TelemetryMiddleware(next http.Handler) http.Handler {
 	propagator := otel.GetTextMapPropagator()
 
-	httpDurationMeter, err := otel.Meter("").Float64Histogram("http.server.duration")
-	if err != nil {
+	ms, msErr := metrics.NewMetricScope("http_server")
+	httpDurationMeter := ms.Histogram("http.server.request.duration", "how long this request took to process", "{ms}")
+	requestCounterMeter := ms.Counter("http.server.request.count", "how many times this request has been requested", "")
+	if err := msErr(); err != nil {
 		panic(err)
 	}
 
@@ -88,11 +91,13 @@ func TelemetryMiddleware(next http.Handler) http.Handler {
 		statusStr := fmt.Sprintf("%d", wrappedWriter.status)
 
 		// Record Dev Metric: HTTP Request Duration Histogram
-		httpDurationMeter.Record(ctx, float64(durationMs), metric.WithAttributes(
-			attribute.String("http.method", r.Method),
-			attribute.String("http.status", statusStr),
-			attribute.String("http.route", r.URL.Path),
-		))
+		commonAttrs := metric.WithAttributes(
+			attribute.String("http.request.method", r.Method),
+			attribute.String("http.response.status_code", statusStr), // Note: response.status_code
+			attribute.String("http.route", r.Pattern),
+		)
+		httpDurationMeter.Record(ctx, float64(durationMs), commonAttrs)
+		requestCounterMeter.Add(ctx, 1, commonAttrs)
 
 		// 4. Record Structured Log with Trace context injection for Loki/Grafana bridging
 		traceID := span.SpanContext().TraceID().String()
