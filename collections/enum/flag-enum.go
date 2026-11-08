@@ -1,4 +1,4 @@
-package shared
+package enum
 
 type FlagEnum int
 
